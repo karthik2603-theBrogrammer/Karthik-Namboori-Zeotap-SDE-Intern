@@ -167,6 +167,12 @@ def delete_rule(rule_id):
         return jsonify({"result": "Rule deleted"}), 200
     return jsonify({"error": "Rule not found"}), 404
 
-# Run the Flask app
+"""
+- Requirement is completed: create_rule(), combine_rules(), evaluate_rules()
+Have to make more APIs for modification of the node.
+1. change_operand
+2. change_operator for operator node and condition node.
+
+"""
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5555, debug=True)
