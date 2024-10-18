@@ -1,5 +1,6 @@
 VALID_OPERATORS = {'<', '>', '<=', '>=', '=', '==', '!=', '<>'}
 ATTRIBUTE_CATALOG = {'age', 'department', 'salary', 'experience'}
+VALID_LOGICAL_OPERATORS = {'AND', 'OR', 'NOT'}
 
 
 FUNCTIONS = {

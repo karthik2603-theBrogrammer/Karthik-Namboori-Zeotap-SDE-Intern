@@ -1,4 +1,4 @@
-from constants import VALID_OPERATORS, FUNCTIONS, ATTRIBUTE_CATALOG 
+from constants import VALID_OPERATORS, FUNCTIONS, ATTRIBUTE_CATALOG, VALID_LOGICAL_OPERATORS
 
 class Node:
     def __init__(self, node_type, value=None, left=None, right=None, args=None):
@@ -22,6 +22,7 @@ class Node:
         self.args = args or []
         self.id = self.get_id()  # Unique identifier for the node
         self.VALID_OPERATORS = VALID_OPERATORS
+        self.VALID_LOGICAL_OPERATORS = VALID_LOGICAL_OPERATORS
         self.ATTRIBUTE_CATALOG = ATTRIBUTE_CATALOG
 
     def get_id(self):
@@ -95,8 +96,8 @@ class Node:
         if self.id == target_id:
             if self.node_type == 'operator' or self.node_type == 'condition':
                 # Validate new operator
-                if new_operator not in self.VALID_OPERATORS:
-                    raise ValueError(f"Operator '{new_operator}' is not in VALID_OPERATORS")
+                if new_operator not in self.VALID_OPERATORS and new_operator not in self.VALID_LOGICAL_OPERATORS:
+                    raise ValueError(f"Operator '{new_operator}' is not in VALID_OPERATORS and VALID_LOGICAL_OPERATORS")
                 new_operator = new_operator.upper()
                 if self.node_type == 'operator':
                     self.value = new_operator
