@@ -5,6 +5,10 @@ from Node import Node
 from Parser import ParseError, Parser
 from constants import VALID_OPERATORS, ATTRIBUTE_CATALOG, FUNCTIONS
 
+def convert_double_to_single_quotes(rule_text):
+    converted_text = re.sub(r'"([^"]*)"', r"'\1'", rule_text)
+    return converted_text
+
 def tokenize(rule_string):
     token_specification = [
         ('NUMBER', r'-?\d+(\.\d+)?'),   # Integer or decimal number, including negatives
@@ -280,6 +284,9 @@ def combine_rules(rules, use_most_freq_operator_heuristic=False, custom_operator
     :param use_most_freq_operator_heuristic: Boolean flag to use the heuristic (as mentioned in the instruction pdf givem).
     :param custom_operator: Operator to use for combining ('AND' or 'OR').
     :return: The root Node of the combined AST.
+
+    preference given to 'use_most_freq_operator_heuristic' flag, if this is set, irrespective to 'custom_operator' 
+    engine will make use of this.
     """
     asts = [create_rule(rule) for rule in rules]
 

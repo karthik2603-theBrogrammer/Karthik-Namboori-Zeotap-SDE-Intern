@@ -87,7 +87,7 @@ class Node:
 
     def change_operator(self, target_id, new_operator):
         """
-        Changes the operator of an operator or condition node.
+        Changes the operator of an operator node (AND, OR, etc) or condition node.
 
         :param target_id: The ID of the target node.
         :param new_operator: The new operator (must be in VALID_OPERATORS).

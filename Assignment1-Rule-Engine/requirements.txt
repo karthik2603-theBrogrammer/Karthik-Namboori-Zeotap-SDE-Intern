@@ -1,1 +1,5 @@
 rich
+flask-cors
+flask
+Flask-SQLAlchemy
+SQLAlchemy

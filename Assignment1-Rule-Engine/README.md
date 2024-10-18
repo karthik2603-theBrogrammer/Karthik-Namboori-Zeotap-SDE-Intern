@@ -18,7 +18,7 @@
 
 ### Testcases
 
-| Sl.No | Test Case                                                              | Passing/ Not Passing |
+| Sl.No | Test Case                                                              | Passing (✅) / Not Passing (❌) |
 |-------|------------------------------------------------------------------------|----------------------|
 | 1     | Parsing a rule with simple condition. `[create_rule(rule:string)]`      | ✅                    |
 | 2     | Parsing a rule with condition and function. `[create_rule(rule:string)]` | ✅                    |
@@ -32,3 +32,9 @@
 | 10    | Negative Number Greater Than                                           | ✅                    |
 | 11    | AST Serialization and Deserialization                                  | ✅                    |
 | 12    | AST Serialization and Deserialization Complex                          | ✅                    |
+
+
+### Miscellaneous Commands
+1. ```
+docker exec -it postgres_db psql -U postgres -d postgres
+```

@@ -5,8 +5,15 @@ import json
 import io
 import sys
 
-# Import the necessary functions and classes from your codebase
-from utils import (
+
+# from  .rule_engine_utils import (
+#     create_rule,
+#     evaluate_rule,
+#     combine_rules,
+#     get_json_from_ast,
+#     get_ast_from_json,
+# )
+from engine_utils import (
     create_rule,
     evaluate_rule,
     combine_rules,
@@ -289,7 +296,7 @@ def run_tests():
     test_case(3, "Combining Rules with OR. [combine_rules([rules]:list<string>)]", test_combining_rules_or, expected_output_3)
     test_case(4, "Combining Rules with AND. [combine_rules([rules]:list<string>)]", test_combining_rules_and, expected_output_4)
     # Feature 3 Tests
-    test_case(5, "Evaluating Simple Condition [evaluate_rule(ast:Node, data:JSON)]", test_evaluate_simple_condition, expected_output_5)
+    test_case(5, "Evaluating Simple Condition. [evaluate_rule(ast:Node, data:JSON)]", test_evaluate_simple_condition, expected_output_5)
     test_case(6, "Evaluating Combined Rules. [evaluate_rule(ast:Node, data:JSON)]", test_evaluate_combined_rules, expected_output_6)
     # Feature 4 Tests
     test_case(7, "Function Without Arguments", test_function_no_args, expected_output_7)
