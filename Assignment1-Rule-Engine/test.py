@@ -283,14 +283,14 @@ def run_tests():
     global start_time, end_time
     start_time = time.time()
     # Feature 1 Tests
-    test_case(1, "Parsing Simple Condition", test_simple_condition, expected_output_1)
-    test_case(2, "Parsing Condition with Function", test_condition_with_function, expected_output_2)
+    test_case(1, "Parsing a rule with simple condition. [create_rule(rule:string)]", test_simple_condition, expected_output_1)
+    test_case(2, "Parsing a rule with condition and function. [create_rule(rule:string)]", test_condition_with_function, expected_output_2)
     # Feature 2 Tests
-    test_case(3, "Combining Rules with OR", test_combining_rules_or, expected_output_3)
-    test_case(4, "Combining Rules with AND", test_combining_rules_and, expected_output_4)
+    test_case(3, "Combining Rules with OR. [combine_rules([rules]:list<string>)]", test_combining_rules_or, expected_output_3)
+    test_case(4, "Combining Rules with AND. [combine_rules([rules]:list<string>)]", test_combining_rules_and, expected_output_4)
     # Feature 3 Tests
-    test_case(5, "Evaluating Simple Condition", test_evaluate_simple_condition, expected_output_5)
-    test_case(6, "Evaluating Combined Rules", test_evaluate_combined_rules, expected_output_6)
+    test_case(5, "Evaluating Simple Condition [evaluate_rule(ast:Node, data:JSON)]", test_evaluate_simple_condition, expected_output_5)
+    test_case(6, "Evaluating Combined Rules. [evaluate_rule(ast:Node, data:JSON)]", test_evaluate_combined_rules, expected_output_6)
     # Feature 4 Tests
     test_case(7, "Function Without Arguments", test_function_no_args, expected_output_7)
     test_case(8, "Function With Arguments", test_function_with_args, expected_output_8)
