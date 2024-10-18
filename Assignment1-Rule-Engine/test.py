@@ -15,12 +15,18 @@ from utils import (
 )
 from Node import Node
 from constants import FUNCTIONS, ATTRIBUTE_CATALOG
+from RichFont import console
 
 # Add necessary functions to FUNCTIONS if not already present
 FUNCTIONS['get_minimum_age'] = lambda: 18
 FUNCTIONS['calculate_bonus'] = lambda experience: experience * 1000
 
 # Helper function to remove 'id' fields from AST JSON for comparison
+total_test_cases = 12
+passing_test_cases = 0
+start_time = None
+end_time = None
+
 def remove_ids(ast_json):
     if isinstance(ast_json, dict):
         ast_json.pop('id', None)
@@ -32,7 +38,8 @@ def remove_ids(ast_json):
 
 # Test runner function
 def test_case(case_number, description, test_function, expected_output):
-    print(f"Running Test Case {case_number}: {description}")
+    global passing_test_cases
+    console.print(f"[italic cyan]Running Test Case {case_number}: {description}")
     # Capture the output
     captured_output = io.StringIO()
     sys.stdout = captured_output
@@ -43,7 +50,8 @@ def test_case(case_number, description, test_function, expected_output):
         expected_output_str = expected_output.strip()
         # Compare actual output to expected output
         if actual_output == expected_output_str:
-            print(f"Success ✅: {description}")
+            console.print(f"Success ✅: {description}")
+            passing_test_cases += 1
         else:
             print(f"Error ❌: {description}")
             print("Expected Output:")
@@ -261,9 +269,8 @@ def test_ast_serialization_deserialization_complex():
     ast_json = get_json_from_ast(ast)
     remove_ids(ast_json)
     json_str = json.dumps(ast_json, indent=2)
-    # Deserialize from JSON
     ast_reconstructed = get_ast_from_json(ast_json)
-    # Evaluate with sample data
+
     data = {'age': 18, 'salary': 6000, 'department': 'HR'}
     result_original = evaluate_rule(ast, data)
     result_reconstructed = evaluate_rule(ast_reconstructed, data)
@@ -272,9 +279,9 @@ def test_ast_serialization_deserialization_complex():
 expected_output_11 = 'Original: True, Reconstructed: True'
 expected_output_12 = 'Original: True, Reconstructed: True'
 
-# Now, we can run these tests using the test_case function
-
 def run_tests():
+    global start_time, end_time
+    start_time = time.time()
     # Feature 1 Tests
     test_case(1, "Parsing Simple Condition", test_simple_condition, expected_output_1)
     test_case(2, "Parsing Condition with Function", test_condition_with_function, expected_output_2)
@@ -295,5 +302,9 @@ def run_tests():
     test_case(12, "AST Serialization and Deserialization Complex", test_ast_serialization_deserialization_complex, expected_output_12)
     # Continue with additional tests for other features...
 
+    end_time = time.time()
 if __name__ == "__main__":
     run_tests()
+    console.print(f"[red]{total_test_cases - passing_test_cases}/ {total_test_cases} test cases have failed. ❌")
+    console.print(f"[green]{passing_test_cases}/ {total_test_cases} test cases have passed. ✅ ")
+    # console.print(f"[cyan]Completed all test cases in {round((end_time - start_time), 4)} seconds")
