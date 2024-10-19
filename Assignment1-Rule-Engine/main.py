@@ -11,7 +11,8 @@ from engine_utils.rule_engine_utils import (
     combine_rules,
     evaluate_rule,
     get_json_from_ast,
-    convert_double_to_single_quotes
+    convert_double_to_single_quotes,
+    print_ast
 )
 
 # Initialize Flask app and SQLAlchemy
@@ -78,7 +79,8 @@ class RuleEngine:
 
     def evaluate_rule(self, rule_id, data_for_evaluation):
         # Evaluate the provided AST against the data_for_evaluation
-        ast = Rule.query.get(rule_id)
+        rule = Rule.query.get(rule_id)
+        ast = create_rule(rule.rule_text)
         return evaluate_rule(ast, data_for_evaluation)
 
     def get_rule(self, rule_id):
@@ -177,6 +179,7 @@ def evaluate_rule_endpoint():
         result = rule_engine.evaluate_rule(rule_id= rule_id, data_for_evaluation= data_for_evaluation)
         return jsonify({"result": result}), 200
     except Exception as e:
+        print(e)
         return jsonify({"error": str(e)}), 400
 
 @app.route('/rule/<int:rule_id>', methods=['DELETE'])

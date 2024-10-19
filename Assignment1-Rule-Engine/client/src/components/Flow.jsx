@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   ReactFlow,
   Controls,
@@ -152,46 +152,53 @@ function calculatePositions(ast, level = 0, xOffset = 0, spacingX = 200, spacing
   return { nodes, edges };
 }
 
-function Flow() {
-  const { nodes: initialNodes, edges: initialEdges } = useMemo(
-    () => calculatePositions(astJson, 0, 0),
-    []
-  );
-
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
-
-  const onNodesChange = useCallback(
-    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
-    []
-  );
-
-  const onEdgesChange = useCallback(
-    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    []
-  );
-
-  const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    []
-  );
-
-  return (
-    <div style={{ height: '100vh' }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        // edgeTypes = ""
-        fitView
-      >
-        <Background />
-        <Controls />
-      </ReactFlow>
-    </div>
-  );
-}
-
-export default Flow;
+function Flow({ astJson }) {
+    const { nodes: initialNodes, edges: initialEdges } = useMemo(
+      () => (astJson ? calculatePositions(astJson) : { nodes: [], edges: [] }),
+      [astJson]
+    );
+  
+    const [nodes, setNodes] = useState(initialNodes);
+    const [edges, setEdges] = useState(initialEdges);
+  
+    useEffect(() => {
+      if (astJson) {
+        const { nodes: newNodes, edges: newEdges } = calculatePositions(astJson);
+        setNodes(newNodes);
+        setEdges(newEdges);
+      }
+    }, [astJson]);
+  
+    const onNodesChange = useCallback(
+      (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+      []
+    );
+  
+    const onEdgesChange = useCallback(
+      (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+      []
+    );
+  
+    const onConnect = useCallback(
+      (params) => setEdges((eds) => addEdge(params, eds)),
+      []
+    );
+  
+    return (
+      <div style={{ height: '100vh' }}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          fitView
+        >
+          <Background variant="dots" gap={16} size={1} />
+          <Controls />
+        </ReactFlow>
+      </div>
+    );
+  }
+  
+  export default Flow;
