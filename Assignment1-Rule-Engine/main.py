@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from sqlalchemy.dialects.postgresql import JSON
 from datetime import datetime
 import json
@@ -15,6 +16,9 @@ from engine_utils.rule_engine_utils import (
 
 # Initialize Flask app and SQLAlchemy
 app = Flask(__name__)
+CORS(app)
+CORS(app, resources={r"/*": {"origins": ["*"]}})
+
 
 # Connect to the PostgreSQL container running in Docker
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/postgres'
@@ -89,6 +93,20 @@ class RuleEngine:
                 "updated_at": rule.updated_at
             }
         return None
+    
+    def get_all_rules(self):
+        rules = Rule.query.all()
+        return [
+            {
+                "id": rule.id,
+                "name": rule.name,
+                "rule_text": rule.rule_text,
+                "ast_json": rule.ast_json,
+                "created_at": rule.created_at,
+                "updated_at": rule.updated_at,
+            }
+            for rule in rules
+        ]
 
     def delete_rule(self, rule_id):
         # Delete a rule from the database
@@ -166,6 +184,15 @@ def delete_rule(rule_id):
     if rule_engine.delete_rule(rule_id):
         return jsonify({"result": "Rule deleted"}), 200
     return jsonify({"error": "Rule not found"}), 404
+
+@app.route('/all-rules', methods = ['GET'])
+def all_rules():
+    try:
+        data = rule_engine.get_all_rules()
+        return jsonify({"result": data}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 """
 - Requirement is completed: create_rule(), combine_rules(), evaluate_rules()
