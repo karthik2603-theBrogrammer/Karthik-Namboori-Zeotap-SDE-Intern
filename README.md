@@ -9,21 +9,28 @@
 </div>
 
 
+
+
+
 ## What is Engo?
 
 - Engo is a custom rule engine that parses rules defined in its specific language I call, `Engolang`. It helps define rules and validate users against these rules. 
 - Engo supports representations like `ASTs (Abstract Syntax Trees)` and `DAGs (Directed Acyclic Graphs)` to optimize rule processing.
 - The UI, built using **React Flow**, allows interactive visualizations of these rule structures. 
 
-## ⚖️ AST vs DAG Comparison
+<details>
+<summary><h1>⚖️ AST vs DAG Comparison</h1></summary>
 
 |  **AST (Abstract Syntax Tree)**         | **DAG (Directed Acyclic Graph)**       |
 | ----------------------------------------- | ---------------------------------------- |
 | <p align="center"><img width="468" alt="Screenshot 2024-10-21 at 12 34 57 AM" src="https://github.com/user-attachments/assets/3a4a4786-48a5-477a-85f8-82638ddb67ec"></p> | <p align="center"><img width="450" alt="Screenshot 2024-10-21 at 12 35 04 AM" src="https://github.com/user-attachments/assets/759bb37f-5bb6-4f99-8a3c-6e8066a8354c"></p> |
 | Represents the syntax of a rule. It is commonly used in compilers for code analysis. Compiler first creates a parse tree (Concrete Syntax Tree) which is converted to an Syntax tree (Abstract Syntax). | Represents a compressed form of an AST. In large-scale applications with complex expressions, DAGs significantly reduce memory usage and eliminate redundant computations. |
 
+</details>
 
-## Engo's Tokenizer
+
+<details>
+<summary><h1>⚖Engo's Tokenizer</h1></summary>
 
 - A code-snippet from Engo's Tokenizer. Can parse numbers, attributes, functions (custom user-defined), left and right parantheses, comma andlogical operator in order of precedence (AND, OR, NOT).
 
@@ -44,7 +51,11 @@ token_specification = [
     ('MISMATCH', r'.'),             # Any other character
 ]
 ```
-## Engo's Structure
+</details>
+
+
+<details>
+<summary><h1>Engo's Structure</h1></summary>
 
 Engo supports the following types of nodes:
 
@@ -88,7 +99,11 @@ Engo supports the following types of nodes:
      ```
      This represents a variable node with the value `salary`.
 
-## 🔗 Features of Engo
+</details>
+
+
+<details>
+<summary><h1>🔗 Features of Engo</h1></summary>
 
 | Feature | Function | Description |
 | ------- | -------- | ----------- |
@@ -100,8 +115,12 @@ Engo supports the following types of nodes:
 | **Change Operator** | `change_operator(target_id:str, new_operator:str)` | Changes the operator of an operator or condition node. |
 | **Change Operand** | `change_operand(target_id:str, new_left_operand:Node, new_right_operand:Node)` | Modifies the left or right operand of a condition node. |
 
-### 🔍 Custom Functions Supported
+</details>
 
+
+<details>
+<summary><h1>🔗 Custom Functions Supported</h1></summary>
+  
 | Function | Description |
 | -------- | ----------- |
 | **get_minimum_age()** | Returns `18` . |
@@ -112,32 +131,15 @@ Engo supports the following types of nodes:
 | **min(x, y)** | Returns the minimum value between `x` and `y`. |
 | **abs(x)** | Returns the absolute value of `x`. |
 
+</details>
 
-# How to Setup Engo
+<details>
+<summary><h1>How to setup Engo</h1></summary>
 
-## Manual Setup
-
-1. **Clone the repository** and install necessary tools (`Node.js`, `npm`, `Python`, `Flask`, and `Docker`.).
-  
-2. **Run the following commands in `/client`**:
-
-   ```sh
-   npm i && npm run dev
-3. In the root directory run the command,
-
-  ```sh
-  pip install -r requirements.txt
-  python main.py
-```
-4. Start the PostgreSQL database using Docker:
-
-  ```sh
-  docker-compose -f docker-compose.yaml up
-```
 
 # ⚙️ Setup of Engo
 
-## 📦 Manual Setup
+### Manual Setup
 1. **Clone the repository** and install necessary tools (`Node.js`, `npm`, `Python`, `Flask`, `Docker` etc.).
 2. **Run the following commands in `/client`**:
  ```sh
@@ -154,16 +156,18 @@ docker-compose -f docker-compose.yaml up
 ```
 
 
-## 🐳 Docker Setup (supports both linux/amd64 and linux/arm64)
+### 🐳 Docker Setup (supports both linux/amd64 and linux/arm64)
 1. Clone the repository.
 2. Run the command
 ```sh
 docker-compose -f docker-compose-prod.yaml up
 ```
+</details>
 
 
 
-# 📝 How to run and use Engo ?
+<details>
+<summary><h1>📝 How to run and use Engo ?</h1></summary>
 ### 1. Python Shell
 
 - Example 1:
@@ -232,7 +236,10 @@ Node(node_type=operator, value=OR)
 ```
 
 
-## 🌐 HTTP API Using Flask
+## 🌐 HTTP API Using React and Flask
+- After running the application, open the react application (Port 5173 for local and Port 3000 in case you are using docker) and perform any desired functions.
+
+
 
 | 📝 API Action                     | 📍 Endpoint                   | 📄 Description                                               | 🔑 Parameters                                                                                          |
 |-------------------------------|-------------------------------|--------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|
@@ -243,4 +250,5 @@ Node(node_type=operator, value=OR)
 | **EVALUATE COMBINED RULES**   | `/evaluate-combined-rules` (POST) | Evaluate combined rules and return the result.             | - `rule_ids` (list of integers, required): IDs of rules to combine and evaluate. <br> - `data_for_evaluation` (object, required): Data to evaluate against. <br> - `use_most_freq_operator_heuristic` (integer, optional): Set to `1` to use heuristic. <br> - `custom_operator` (string, optional): Operator (`AND` or `OR`). <br> - `store_combined_rule` (boolean, optional): Store the combined rule. |
 | **DELETE RULE**               | `/rule/<rule_id>` (DELETE)    | Delete a rule by ID.                                         | - `rule_id` (integer, path): The unique identifier of the rule to delete.                              |
 | **RETRIEVE ALL RULES**        | `/all-rules` (GET)            | Retrieve all rules in the system.                            | None                                                                                                   |
+</details>
 
