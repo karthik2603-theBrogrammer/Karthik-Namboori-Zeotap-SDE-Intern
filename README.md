@@ -30,7 +30,7 @@
 
 
 <details>
-<summary><h1>⚖Engo's Tokenizer</h1></summary>
+<summary><h1>Engo's Tokenizer</h1></summary>
 
 - A code-snippet from Engo's Tokenizer. Can parse numbers, attributes, functions (custom user-defined), left and right parantheses, comma andlogical operator in order of precedence (AND, OR, NOT).
 
@@ -119,7 +119,7 @@ Engo supports the following types of nodes:
 
 
 <details>
-<summary><h1>🔗 Custom Functions Supported</h1></summary>
+<summary><h1>Custom Functions Supported</h1></summary>
   
 | Function | Description |
 | -------- | ----------- |
@@ -136,8 +136,6 @@ Engo supports the following types of nodes:
 <details>
 <summary><h1>How to setup Engo</h1></summary>
 
-
-# ⚙️ Setup of Engo
 
 ### Manual Setup
 1. **Clone the repository** and install necessary tools (`Node.js`, `npm`, `Python`, `Flask`, `Docker` etc.).
@@ -168,6 +166,7 @@ docker-compose -f docker-compose-prod.yaml up
 
 <details>
 <summary><h1>📝 How to run and use Engo ?</h1></summary>
+  
 ### 1. Python Shell
 
 - Example 1:
@@ -240,7 +239,6 @@ Node(node_type=operator, value=OR)
 - After running the application, open the react application (Port 5173 for local and Port 3000 in case you are using docker) and perform any desired functions.
 
 
-
 | 📝 API Action                     | 📍 Endpoint                   | 📄 Description                                               | 🔑 Parameters                                                                                          |
 |-------------------------------|-------------------------------|--------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|
 | **CREATE RULE**               | `/rule` (POST)                | Create a rule from a string and return its ID.               | - `rule_text` (string, required): The rule to be created in Engolang.                                  |
@@ -252,3 +250,16 @@ Node(node_type=operator, value=OR)
 | **RETRIEVE ALL RULES**        | `/all-rules` (GET)            | Retrieve all rules in the system.                            | None                                                                                                   |
 </details>
 
+<details>
+<summary><h1>✨ Snapshots of the UI</h1></summary>
+<table>
+  <tr>
+    <td><img width="700" alt="Screenshot 2024-10-20 at 8 43 24 PM" src="https://github.com/user-attachments/assets/f8d1aa72-d2d2-4387-8787-2e4814918fc4"></td>
+    <td><img width="700" alt="Screenshot 2024-10-21 at 1 32 56 AM" src="https://github.com/user-attachments/assets/af3950dd-eff8-44bd-9a07-48f4e53ef6ad"></td>
+  </tr>
+  <tr>
+    <td><img width="700" alt="Screenshot 2024-10-21 at 1 33 19 AM" src="https://github.com/user-attachments/assets/e7d2cf34-8892-4d4b-89a9-4b8ca4568a05"></td>
+    <td><img width="700" alt="Screenshot 2024-10-21 at 1 34 01 AM" src="https://github.com/user-attachments/assets/d1d98b0d-4714-4aef-9a2b-3912b2d190b0"></td>
+  </tr>
+</table>
+</details>
