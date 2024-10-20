@@ -13,7 +13,7 @@
 
 - Engo is a custom rule engine that parses rules defined in its specific language I call, `Engolang`. It helps define rules and validate users against these rules. 
 - Engo supports representations like `ASTs (Abstract Syntax Trees)` and `DAGs (Directed Acyclic Graphs)` to optimize rule processing.
-- The UI, built using **React Flow**, allows interactive visualizations of these rule structures. 🌟
+- The UI, built using **React Flow**, allows interactive visualizations of these rule structures. 
 
 ## ⚖️ AST vs DAG Comparison
 
@@ -25,7 +25,7 @@
 
 ## Engo's Tokenizer
 
-A code-snippet from Engo's Tokenizer. Can parse numbers, attributes, functions (custom user-defined), left and right parantheses, comma andlogical operator in order of precedence (AND, OR, NOT).
+- A code-snippet from Engo's Tokenizer. Can parse numbers, attributes, functions (custom user-defined), left and right parantheses, comma andlogical operator in order of precedence (AND, OR, NOT).
 
 ```python
 token_specification = [
@@ -44,4 +44,203 @@ token_specification = [
     ('MISMATCH', r'.'),             # Any other character
 ]
 ```
+## Engo's Structure
+
+Engo supports the following types of nodes:
+
+1. **Operator Node**
+   - Represents logical operators like `AND`, `OR`, and `NOT`.
+   - **Example**:
+     ```python
+     Node(node_type='operator', value='AND', left=Node(...), right=Node(...))
+     ```
+     This represents an operator node that combines two sub-expressions using the `AND` operator.
+
+2. **Condition Node**
+   - Represents a condition to be evaluated. It contains an attribute, an operator, and an operand.
+   - **Example**:
+     ```python
+     Node(node_type='condition', value=('age', '>', 30))
+     ```
+     This represents a condition node that checks if the attribute `age` is greater than `30`.
+
+3. **Function Node**
+   - Represents a function call with arguments. The function can be one of the custom functions defined in Engo.
+   - **Example**:
+     ```python
+     Node(node_type='function', value='calculate_bonus', args=[Node(node_type='variable', value='experience')])
+     ```
+     This represents a function node for the `calculate_bonus` function, which takes `experience` as an argument.
+
+4. **Constant Node**
+   - Represents a constant value, either numeric or Boolean.
+   - **Example**:
+     ```python
+     Node(node_type='constant', value=42)
+     ```
+     This represents a constant node with the value `42`.
+
+5. **Variable Node**
+   - Represents a variable that can be referenced within a condition or function.
+   - **Example**:
+     ```python
+     Node(node_type='variable', value='salary')
+     ```
+     This represents a variable node with the value `salary`.
+
+## 🔗 Features of Engo
+
+| Feature | Function | Description |
+| ------- | -------- | ----------- |
+| **Rule Creation** | `create_rule(rule_string:string)` | Parses a rule string into an AST representation. |
+| **Combining Rules** | `combine_rules(rules list, use_most_freq_operator_heuristic:bool, custom_operator:str)` | Combines multiple rules into a single AST. |
+| **Rule Evaluation** | `evaluate_rule(ast:Node, data:JSON)` | Evaluates an AST against user-provided data to determine if the rule holds true. |
+| **Add Sub-expression** | `add_sub_expression(parent_id:str, sub_expr_ast Node, position:string)` | Adds a sub-expression to an operator node. |
+| **Remove Sub-expression** | `remove_sub_expression(target_id:string)` | Removes a sub-expression. **Note**: Does not work for the root node. |
+| **Change Operator** | `change_operator(target_id:str, new_operator:str)` | Changes the operator of an operator or condition node. |
+| **Change Operand** | `change_operand(target_id:str, new_left_operand:Node, new_right_operand:Node)` | Modifies the left or right operand of a condition node. |
+
+### 🔍 Custom Functions Supported
+
+| Function | Description |
+| -------- | ----------- |
+| **get_minimum_age()** | Returns `18` . |
+| **calculate_bonus(experience)** | Returns `experience * 1000` . |
+| **average_salary()** | Returns `40000`. |
+| **salary_for_age_experience(age, experience)** | Calculates salary using age and experience with the formula salary = `(age * experience * 1000) + 1000` . |
+| **max(x, y)** | Returns the maximum value between `x` and `y`. |
+| **min(x, y)** | Returns the minimum value between `x` and `y`. |
+| **abs(x)** | Returns the absolute value of `x`. |
+
+
+# How to Setup Engo
+
+## Manual Setup
+
+1. **Clone the repository** and install necessary tools (`Node.js`, `npm`, `Python`, `Flask`, and `Docker`.).
+  
+2. **Run the following commands in `/client`**:
+
+   ```sh
+   npm i && npm run dev
+3. In the root directory run the command,
+
+  ```sh
+  pip install -r requirements.txt
+  python main.py
+```
+4. Start the PostgreSQL database using Docker:
+
+  ```sh
+  docker-compose -f docker-compose.yaml up
+```
+
+# ⚙️ Setup of Engo
+
+## 📦 Manual Setup
+1. **Clone the repository** and install necessary tools (`Node.js`, `npm`, `Python`, `Flask`, `Docker` etc.).
+2. **Run the following commands in `/client`**:
+ ```sh
+ npm i && npm run dev
+```
+3. In the root directory, install dependencies and run the main file:
+```sh
+pip install -r requirements.txt
+python main.py
+```
+4. Start the PostgreSQL database using Docker:
+```sh
+docker-compose -f docker-compose.yaml up
+```
+
+
+## 🐳 Docker Setup (supports both linux/amd64 and linux/arm64)
+1. Clone the repository.
+2. Run the command
+```sh
+docker-compose -f docker-compose-prod.yaml up
+```
+
+
+
+# 📝 How to run and use Engo ?
+### 1. Python Shell
+
+- Example 1:
+  
+```python
+>>> from engine_utils import *
+>>> rule = "salary > salary_for_age_exp(age, experience)"
+>>> ast = create_rule(rule)
+>>> ast.get_text()
+'(salary > salary_for_age_exp(age, experience))'
+
+>>> evaluate_rule(ast, {"salary": 90000, "age": 21, "experience": 0})
+True
+
+>>> evaluate_rule(ast, {"salary": 90000, "age": 21, "experience": 5})
+False
+```
+
+- Example 2:
+  
+```python
+>>> from engine_utils import *
+>>> rule = "age > 21 or experience > 4"
+>>> ast = create_rule(rule)
+>>> ast.get_text()
+'((age > 21) OR (experience > 4))'
+>>> ast
+Node(node_type=operator, value=OR)
+
+>>> print_ast_json(ast)
+{
+  "id": "COND_VAR_age_>_CONST_21-OR-COND_VAR_experience_>_CONST_4",
+  "node_type": "operator",
+  "value": "OR",
+  "left": {
+    "id": "COND_VAR_age_>_CONST_21",
+    "node_type": "condition",
+    "operator": ">",
+    "left": {
+      "id": "VAR_age",
+      "node_type": "variable",
+      "value": "age"
+    },
+    "right": {
+      "id": "CONST_21",
+      "node_type": "constant",
+      "value": 21
+    }
+  },
+  "right": {
+    "id": "COND_VAR_experience_>_CONST_4",
+    "node_type": "condition",
+    "operator": ">",
+    "left": {
+      "id": "VAR_experience",
+      "node_type": "variable",
+      "value": "experience"
+    },
+    "right": {
+      "id": "CONST_4",
+      "node_type": "constant",
+      "value": 4
+    }
+  }
+}
+```
+
+
+## 🌐 HTTP API Using Flask
+
+| 📝 API Action                     | 📍 Endpoint                   | 📄 Description                                               | 🔑 Parameters                                                                                          |
+|-------------------------------|-------------------------------|--------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|
+| **CREATE RULE**               | `/rule` (POST)                | Create a rule from a string and return its ID.               | - `rule_text` (string, required): The rule to be created in Engolang.                                  |
+| **RETRIEVE RULE**             | `/rule/<rule_id>` (GET)       | Retrieve a rule by ID.                                       | - `rule_id` (integer, path): The unique identifier of the rule to retrieve.                            |
+| **COMBINE RULES**             | `/rules/combine` (POST)       | Combine multiple rules into one and return its AST.          | - `rule_ids` (list of integers, required): IDs of rules to combine. <br> - `use_most_freq_operator_heuristic` (integer, optional): Set to `1` to use heuristic. <br> - `custom_operator` (string, optional): Operator (`AND` or `OR`). <br> - `store_combined_rule` (boolean, optional): Store the combined rule. |
+| **EVALUATE RULE**             | `/rule/evaluate` (POST)       | Evaluate a rule given user data and return the result.       | - `rule_id` (integer, required): ID of the rule to evaluate. <br> - `data_for_evaluation` (object, required): Data to evaluate the rule against. |
+| **EVALUATE COMBINED RULES**   | `/evaluate-combined-rules` (POST) | Evaluate combined rules and return the result.             | - `rule_ids` (list of integers, required): IDs of rules to combine and evaluate. <br> - `data_for_evaluation` (object, required): Data to evaluate against. <br> - `use_most_freq_operator_heuristic` (integer, optional): Set to `1` to use heuristic. <br> - `custom_operator` (string, optional): Operator (`AND` or `OR`). <br> - `store_combined_rule` (boolean, optional): Store the combined rule. |
+| **DELETE RULE**               | `/rule/<rule_id>` (DELETE)    | Delete a rule by ID.                                         | - `rule_id` (integer, path): The unique identifier of the rule to delete.                              |
+| **RETRIEVE ALL RULES**        | `/all-rules` (GET)            | Retrieve all rules in the system.                            | None                                                                                                   |
 
