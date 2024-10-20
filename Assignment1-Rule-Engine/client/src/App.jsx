@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Toaster, toast } from 'sonner';
+import { Button } from '@nextui-org/button';
 
 import Flow from './components/Flow';
 import HeroModalComponent from './components/HeroModalComponent';
@@ -8,96 +9,136 @@ import CombineRulesComponent from './components/CombineRulesComponent';
 import EvaluateRulesComponent from './components/EvaluateRulesComponent';
 import ModifyRuleComponent from './components/ModifyRuleComponent';
 import CreateRuleComponent from './components/CreateRuleComponent';
+import SelectRuleComponent from './components/SelectRuleComponent'; // Import new component
 import './App.css';
 
 function App() {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // Sidebar initially closed
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [rules, setRules] = useState(null);
-  const [selectedSetting, setSelectedSetting] = useState('Select Rule'); // Track selected setting
-  const [selectedRuleAst, setSelectedRuleAst] = useState(null); // For 'Select Rule'
-  const [combinedAst, setCombinedAst] = useState(null); // For 'Combine Rules'
-  const [evaluationResult, setEvaluationResult] = useState(null); // For 'Evaluate Rules'
+  const [selectedSetting, setSelectedSetting] = useState(null); // Initially null
+  const [selectedRuleAst, setSelectedRuleAst] = useState(null);
+  const [combinedAst, setCombinedAst] = useState(null);
+  const [evaluationResult, setEvaluationResult] = useState(null);
 
-  const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen); // Toggle sidebar
+  const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
 
   // Fetch all rules from the backend API
   const fetchRules = async () => {
     try {
       const response = await axios.get('http://localhost:5555/all-rules');
-      setRules(response.data.result); // Set rules in state
+      setRules(response.data.result);
+      toast.success("ENGO Rule engine is a go!")
     } catch (error) {
-      console.error('Error fetching rules:', error);
+      toast.error(`Error fetching rules:, ${JSON.stringify(error)}`);
     }
   };
 
-  // Call fetchRules when the component mounts
   useEffect(() => {
     fetchRules();
   }, []);
 
-  // Handler for 'Select Rule'
   const handleSelectRule = (rule) => {
     setSelectedRuleAst(rule.ast_json);
-    setCombinedAst(null); // Reset combined AST if any
-    setEvaluationResult(null); // Reset evaluation result if any
-    setIsDrawerOpen(false); // Close the drawer after selection
+    setCombinedAst(null);
+    setEvaluationResult(null);
+    setIsDrawerOpen(false); // Close drawer after selection
+    toast.success(`Viewing the selected rule's AST!`)
   };
 
-  // Handler for 'Combine Rules'
   const handleCombineRules = async (selectedRuleIds, useMostFreqOperatorHeuristic, customOperator) => {
     try {
       const body = {
         rule_ids: selectedRuleIds,
-        use_most_freq_operator_heuristic: useMostFreqOperatorHeuristic ? 1 : 0, // 1 = True, 0 = False
+        use_most_freq_operator_heuristic: useMostFreqOperatorHeuristic ? 1 : 0,
         custom_operator: customOperator,
         store_combined_rule: false,
       };
       const response = await axios.post('http://localhost:5555/rules/combine', body);
-      setCombinedAst(response.data.combined_ast); // Store combined AST
-      setSelectedRuleAst(null); // Reset selected rule AST if any
-      setEvaluationResult(null); // Reset evaluation result if any
-      setIsDrawerOpen(false); // Close the drawer after combining
+      setCombinedAst(response.data.combined_ast);
+      setSelectedRuleAst(null);
+      setEvaluationResult(null);
+      setIsDrawerOpen(false);
+
+      toast.success(`Viewing the combined rule's AST!`)
     } catch (error) {
-      console.error('Error combining rules:', error);
+      toast.error(`Error: ${JSON.stringify(error?.response?.data?.error)}`);
     }
   };
 
-  // Handler for 'Evaluate Rules'
-  const handleEvaluateRule = async (ruleId, evaluationData) => {
+  const onEvaluateCombinedRules = async (requestBody) => {
     try {
-      const body = {
-        rule_id: ruleId,
-        data_for_evaluation: evaluationData,
-      };
-      const response = await axios.post('http://localhost:5555/rule/evaluate', body);
-      setEvaluationResult(response.data.result); // Store evaluation result
-      if(response.data.result == true){
-        toast.success('True: Valid')
-      }else{
-        toast.error('False: Invalid User')
-      }
-
+      const response = await axios.post('http://localhost:5555/evaluate-combined-rules', requestBody);
+      setEvaluationResult(response.data.result);
+      response.data.result
+        ? toast.success('Evaluation Result: Valid')
+        : toast.error('Evaluation Result: Invalid User');
     } catch (error) {
-      console.error('Error evaluating rule:', error);
-      toast.error(`Error: ${error?.message}`)
+      toast.error(`Error: ${JSON.stringify(error?.response?.data?.error)}`);
     }
   };
 
   return (
     <>
-      <HeroModalComponent />
-
-      {/* Sidebar Drawer */}
+      {/* <HeroModalComponent /> */}
+      <div className="relative z-100 flex">
+        <img
+          src="/engo-3.png"
+          alt="engo-url"
+          className={`absolute z-100 top-12 ${selectedSetting === null ? 'md:top-0' : 'md:-top-2'} left-1/2 transform -translate-x-1/2 md:h-[250px] h-[150px] md:w-[400px] w-[270px] bg-transparent object-contain`}
+          height={100}
+          width={100}
+        />
+      </div>
+      {/* engo-arrow-to-console */}
+      <div className="md:flex hidden absolute z-100 top-[70px] -right-[100px]  ">
+        <img
+          src="/arrow.png"
+          alt="engo-url"
+          className="engo-arrow-to-console z-100 md:h-[80px] h-[70px] md:w-[350px] w-[270px] bg-transparent object-contain"
+          height={100}
+          width={100}
+        />
+      </div>
       <div
-  id="drawer-navigation"
-  className={`fixed top-0 left-0 z-40 w-[100%] md:w-[80%] h-screen p-4 overflow-y-auto transition-transform ${
-    isDrawerOpen ? 'translate-x-0' : '-translate-x-full'
-  } bg-gray-400 bg-opacity-20 backdrop-blur-md backdrop-filter rounded-lg`}
->
+        className={`absolute flex items-center justify-center top-[200px] md:top-[220px] z-[20] left-1/2 transform -translate-x-1/2 w-full ${(selectedRuleAst === null && combinedAst == null) ? 'flex' : 'hidden'
+          }`}
+        style={{ pointerEvents: 'auto' }}
+      >
+        <p className="w-[90%] md:w-[60%] text-center text-[15px]">
+          Engo is a custom Rule Engine built by me, Karthik Namboori. I am a 4th Year Computer Science Engineering student at PES University, Bangalore.
+          For more, check out my work on {" "}
+          <a
+            href="https://github.com/karthik2603-theBrogrammer"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline"
+          >
+            GitHub
+          </a>
+          {" "}and{" "}
+          <a
+            href="https://www.linkedin.com/in/karthik-namboori-145238216/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline"
+          >
+            LinkedIn
+          </a>
+          . To get started, click the <strong>Toggle Console</strong> button.
+        </p>
+      </div>
+
+
+
+      <div
+        id="drawer-navigation"
+        className={`fixed top-0 left-0 z-40 w-[100%] md:w-[80%] h-screen p-4 overflow-y-auto transition-transform ${isDrawerOpen ? 'translate-x-0' : '-translate-x-full'
+          } bg-gray-400 bg-opacity-20 backdrop-blur-md backdrop-filter rounded-lg`}
+      >
         <h5 className="text-base font-semibold text-gray-500 uppercase">Engo</h5>
         <button
           type="button"
-          onClick={toggleDrawer} // Close the drawer
+          onClick={toggleDrawer}
           className="absolute top-2.5 end-2.5 text-gray-400 hover:bg-gray-200 hover:text-gray-900 p-1.5 rounded-lg"
         >
           <svg
@@ -115,69 +156,45 @@ function App() {
           <span className="sr-only">Close menu</span>
         </button>
 
-        <div className="py-4 flex flex-col items-center justify-center gap-2">
+        <div className="py-4 flex flex-col items-center justify-center gap-2 mt-3">
           <h1 className="text-3xl">Rule Engine Console</h1>
-          <p className="text-sm">
-            Use this console to fetch and select rules, render their ASTs, modify rules by adding/removing sub-expressions, and much more!
+          <p className="text-sm text-center">
+            Use this console to fetch and select rules, render their ASTs, modify rules, and more!
           </p>
         </div>
 
-        {/* Settings Buttons */}
-        <div className="flex gap-4 my-4">
-          {['Create Rule', 'Select Rule', 'Combine Rules', 'Evaluate Rules', 'Modify Rule'].map((setting) => (
-            <button
+        <div className="flex gap-4 my-4 items-center justify-center flex-wrap">
+          {['Create Rule', 'Select Rule', 'Combine Rules', 'Evaluate Rules'].map((setting) => (
+            <Button
               key={setting}
-              className={`px-4 py-2 rounded-lg ${
-                selectedSetting === setting ? 'bg-blue-600 text-white' : 'bg-gray-300 text-black'
-              }`}
+              className="px-4 py-2 rounded-lg"
+              variant={selectedSetting === setting ? 'shadow' : 'flat'}
+              color="primary"
               onClick={() => setSelectedSetting(setting)}
             >
               {setting}
-            </button>
+            </Button>
           ))}
         </div>
 
-        {/* Render Functionality Based on Selected Setting */}
         <div className="py-4">
           {selectedSetting === 'Select Rule' && (
-            <>
-              <h2 className="text-xl mb-4">Select a Rule</h2>
-              {rules && rules.length ? (
-                rules.map((rule) => (
-                  <div
-                    key={rule.id}
-                    className="flex justify-between p-3 m-2 bg-gray-300 rounded cursor-pointer"
-                    onClick={() => handleSelectRule(rule)}
-                  >
-                    <p>{rule.rule_text}</p>
-                  </div>
-                ))
-              ) : (
-                <p>No rules available</p>
-              )}
-            </>
+            <SelectRuleComponent rules={rules} onSelectRule={handleSelectRule} />
           )}
-          {
-            selectedSetting == 'Create Rule' && (
-              <CreateRuleComponent fetchRules = {fetchRules}/>
-            )
-          }
-
+          {selectedSetting === 'Create Rule' && <CreateRuleComponent fetchRules={fetchRules} />}
           {selectedSetting === 'Combine Rules' && (
             <CombineRulesComponent rules={rules} onCombineRules={handleCombineRules} />
           )}
-
           {selectedSetting === 'Evaluate Rules' && (
-            <EvaluateRulesComponent rules={rules} onEvaluateRule={handleEvaluateRule} evaluationResult={evaluationResult} />
-          )}
-
-          {selectedSetting === 'Modify Rule' && (
-            <ModifyRuleComponent rules={rules} />
+            <EvaluateRulesComponent
+              rules={rules}
+              onEvaluateCombinedRules={onEvaluateCombinedRules}
+              evaluationResult={evaluationResult}
+            />
           )}
         </div>
       </div>
 
-      {/* Button to Open Sidebar */}
       <button
         className="absolute top-4 right-4 z-40 text-white bg-blue-700 hover:bg-blue-800 focus:ring-1 font-medium rounded-lg text-sm px-5 py-2.5"
         onClick={toggleDrawer}
@@ -185,9 +202,8 @@ function App() {
         Toggle Console!
       </button>
 
-      {/* Pass the appropriate AST to Flow Component */}
-      <Flow astJson={selectedRuleAst || combinedAst} evaluationResult={evaluationResult} />
-      <Toaster richColors position="bottom-right" expand = {true} />
+      <Flow astJson={selectedRuleAst || combinedAst} />
+      <Toaster richColors position="bottom-right" expand={true} />
     </>
   );
 }

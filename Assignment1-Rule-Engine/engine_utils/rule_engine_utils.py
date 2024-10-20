@@ -3,11 +3,12 @@ import json
 
 from Node import Node
 from Parser import ParseError, Parser
-from constants import VALID_OPERATORS, ATTRIBUTE_CATALOG, FUNCTIONS
+from constants import VALID_OPERATORS, ATTRIBUTE_CATALOG, FUNCTIONS, VALID_LOGICAL_OPERATORS
 
 def convert_double_to_single_quotes(rule_text):
     converted_text = re.sub(r'"([^"]*)"', r"'\1'", rule_text)
     return converted_text
+
 
 def tokenize(rule_string):
     token_specification = [
@@ -57,6 +58,8 @@ def tokenize(rule_string):
     # print(tokens)
     return tokens
 
+def is_blank(s):
+    return s.strip() == ''
 
 def create_rule(rule_string):
     """
@@ -288,6 +291,8 @@ def combine_rules(rules, use_most_freq_operator_heuristic=False, custom_operator
     preference given to 'use_most_freq_operator_heuristic' flag, if this is set, irrespective to 'custom_operator' 
     engine will make use of this.
     """
+    if custom_operator not in VALID_LOGICAL_OPERATORS and custom_operator is not None:
+        raise ValueError(f"Invalid custom_operator: {custom_operator}")
     asts = [create_rule(rule) for rule in rules]
 
     # Count operator frequencies across all ASTs

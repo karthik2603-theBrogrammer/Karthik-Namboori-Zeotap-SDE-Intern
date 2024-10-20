@@ -12,8 +12,10 @@ from engine_utils.rule_engine_utils import (
     evaluate_rule,
     get_json_from_ast,
     convert_double_to_single_quotes,
-    print_ast
+    print_ast,
+    is_blank
 )
+from RichFont import console
 
 # Initialize Flask app and SQLAlchemy
 app = Flask(__name__)
@@ -58,6 +60,8 @@ class RuleEngine:
         """
             Returns the AST of the combined rules in the form of JSON.
         """
+        if is_blank(custom_operator):
+            custom_operator = None
         # Fetch the rules from the database
         rules = []
         for rule_id in rule_ids:
@@ -72,6 +76,7 @@ class RuleEngine:
             print("use_most_freq_operator_heuristic: ", use_most_freq_operator_heuristic)
         else:
             print("Not using heur")
+        
         if custom_operator is not None:
             print("Custom operator: ", custom_operator)
         combined_ast = combine_rules(rules, use_most_freq_operator_heuristic = use_most_freq_operator_heuristic, custom_operator=custom_operator)
@@ -83,6 +88,32 @@ class RuleEngine:
         ast = create_rule(rule.rule_text)
         return evaluate_rule(ast, data_for_evaluation)
 
+    def evaluate_combined_rules(self, rule_ids, data_for_evaluation, use_most_freq_operator_heuristic = None, custom_operator = None, store_combined_rule = False):
+        """
+            Returns evaluated response of the AST of the combined rules with the JSON data
+            object passed to it.
+        """
+        if is_blank(custom_operator):
+            custom_operator = None
+        # Fetch the rules from the database
+        rules = []
+        for rule_id in rule_ids:
+            rule = Rule.query.get(rule_id)
+            if not rule:
+                raise ValueError(f"Rule with ID {rule_id} not found")
+            rules.append(rule.rule_text)
+        
+                # Combine the rules into a single AST
+        if use_most_freq_operator_heuristic is not None:
+            use_most_freq_operator_heuristic = True if use_most_freq_operator_heuristic == 1 else False
+            print("use_most_freq_operator_heuristic: ", use_most_freq_operator_heuristic)
+        else:
+            print("Not using heur")
+        if custom_operator is not None:
+            print("Custom operator: ", custom_operator)
+        combined_ast = combine_rules(rules, use_most_freq_operator_heuristic = use_most_freq_operator_heuristic, custom_operator=custom_operator)
+        return evaluate_rule(combined_ast, data_for_evaluation)
+    
     def get_rule(self, rule_id):
         # Fetch a rule from the database
         rule = Rule.query.get(rule_id)
@@ -126,6 +157,8 @@ with app.app_context():
 # Initialize the RuleEngine instance
 rule_engine = RuleEngine()
 
+
+
 # API Routes
 @app.route('/rule', methods=['POST'])
 def create_rule_endpoint():
@@ -161,11 +194,10 @@ def combine_rules_endpoint():
             use_most_freq_operator_heuristic= data.get('use_most_freq_operator_heuristic', None), 
             custom_operator=data.get('custom_operator', None),
             store_combined_rule = data.get('store_combined_rule', False)
-            
         )
         return jsonify({"combined_ast": combined_ast}), 200
     except ValueError as e:
-        return jsonify({"error": str(e)}), 404
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/rule/evaluate', methods=['POST'])
 def evaluate_rule_endpoint():
@@ -180,6 +212,22 @@ def evaluate_rule_endpoint():
         return jsonify({"result": result}), 200
     except Exception as e:
         print(e)
+        return jsonify({"error": str(e)}), 400
+
+@app.route('/evaluate-combined-rules', methods = ['POST'])
+def evaluate_combined_rules():
+    # evaluate_combined_rules
+    data = request.get_json()
+    try:
+        result = rule_engine.evaluate_combined_rules(
+            rule_ids= data.get('rule_ids', []), 
+            data_for_evaluation= data.get('data_for_evaluation', {}),
+            use_most_freq_operator_heuristic= data.get('use_most_freq_operator_heuristic', None),
+            custom_operator=data.get('custom_operator', None),
+            store_combined_rule = data.get('store_combined_rule', False)
+        )
+        return jsonify({"result": result}), 200
+    except Exception as e:
         return jsonify({"error": str(e)}), 400
 
 @app.route('/rule/<int:rule_id>', methods=['DELETE'])
@@ -205,4 +253,22 @@ Have to make more APIs for modification of the node.
 
 """
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5555, debug=True)
+    console.print(
+"""[green]
+ _____ _   _  ____          _____ _            ____        _
+| ____| \ | |/ ___| ___ _  |_   _| |__   ___  |  _ \ _   _| | ___
+|  _| |  \| | |  _ / _ (_)   | | | '_ \ / _ \ | |_) | | | | |/ _ \.
+| |___| |\  | |_| | (_) |    | | | | | |  __/ |  _ <| |_| | |  __/
+|_____|_| \_|\____|\___(_)   |_| |_| |_|\___| |_| \_\.\__,_|_|\___|
+
+ _____             _
+| ____|_ __   __ _(_)_ __   ___
+|  _| | '_ \ / _` | | '_ \ / _ \.
+| |___| | | | (_| | | | | |  __/_
+|_____|_| |_|\__, |_|_| |_|\___(_)
+             |___/
+"""
+
+
+)
+    app.run(host='0.0.0.0', port=5555)

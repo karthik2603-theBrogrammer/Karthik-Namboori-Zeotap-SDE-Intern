@@ -1,107 +1,135 @@
 import { useState } from 'react';
-import { Toaster, toast } from 'sonner'
+import { Toaster, toast } from 'sonner';
+import { Button } from '@nextui-org/button';
+import { Input } from '@nextui-org/input';
 
+import { titleCase, formatDateToIST } from '../../utils';
 
 const ATTRIBUTE_CATALOG = ['age', 'department', 'salary', 'experience'];
 
-function EvaluateRulesComponent({ rules, onEvaluateRule, evaluationResult }) {
-    const [selectedRuleId, setSelectedRuleId] = useState(null);
-    const [dataForEvaluation, setDataForEvaluation] = useState({});
+function EvaluateRulesComponent({ rules, onEvaluateCombinedRules, evaluationResult }) {
+  const [selectedRuleIds, setSelectedRuleIds] = useState([]); // Support for multiple rules
+  const [dataForEvaluation, setDataForEvaluation] = useState({});
+  const [useHeuristic, setUseHeuristic] = useState(false); // Toggle heuristic usage
+  const [customOperator, setCustomOperator] = useState('AND'); // Default operator
 
-    // Helper function to ensure numbers are correctly parsed
-    const parseValue = (attribute, value) => {
-        if (['age', 'salary', 'experience'].includes(attribute)) {
-            const parsedValue = parseFloat(value);
-            return isNaN(parsedValue) ? '' : parsedValue; // Return empty string if not a valid number
-        }
-        return value; // Return as-is for non-numeric fields
-    };
+  // Helper function to ensure numbers are correctly parsed
+  const parseValue = (attribute, value) => {
+    if (['age', 'salary', 'experience'].includes(attribute)) {
+      const parsedValue = parseFloat(value);
+      return isNaN(parsedValue) ? '' : parsedValue; // Return empty string if not a valid number
+    }
+    return value; // Return as-is for non-numeric fields
+  };
 
-    const handleInputChange = (attribute, value) => {
-        setDataForEvaluation((prevData) => ({
-            ...prevData,
-            [attribute]: parseValue(attribute, value),
-        }));
-    };
+  const handleInputChange = (attribute, value) => {
+    setDataForEvaluation((prevData) => ({
+      ...prevData,
+      [attribute]: parseValue(attribute, value),
+    }));
+  };
 
-    const handleSubmit = () => {
-        if (selectedRuleId) {
-            onEvaluateRule(selectedRuleId, dataForEvaluation);
-        } else {
-            toast.warning('Please select a rule to evaluate.')
-        }
-    };
-
-    return (
-        <>
-            
-
-            <div className="flex flex-col items-center justify-center gap-2">
-                <div className="flex flex-col items-center justify-center gap-2">
-                    <h1 className="text-2xl">Evaluate Rule</h1>
-                    <p className="">This feature allows you to check if an user is
-                        of that cohort based on the rule you select.</p>
-                </div>
-
-
-                <div className="flex flex-col gap-2">
-                    <div className="flex flex-row items-start mt-4 gap-3">
-                        {ATTRIBUTE_CATALOG.map((attribute) => (
-                            <label key={attribute} className="mt-2">
-                                {attribute}:
-                                <input
-                                    type="text"
-                                    value={dataForEvaluation[attribute] || ''}
-                                    onChange={(e) => handleInputChange(attribute, e.target.value)}
-                                    className="ml-2 p-1 border rounded"
-                                />
-                            </label>
-                        ))}
-                    </div>
-                    <button
-                        className="mt-4 px-4 py-2 bg-green-500 text-white rounded"
-                        onClick={handleSubmit}
-                    >
-                        Evaluate Rule
-                    </button>
-                </div>
-                <div className="w-full">
-                    {rules && rules.length ? (
-                        rules.map((rule) => (
-                            <div
-                                key={rule.id}
-                                className={`flex items-center p-3 m-2 rounded cursor-pointer ${selectedRuleId === rule.id ? 'bg-blue-300' : 'bg-gray-300'
-                                    }`}
-                                onClick={() => setSelectedRuleId(rule.id)}
-                            >
-                                <p>{rule.rule_text}</p>
-                            </div>
-                        ))
-                    ) : (
-                        <p>No rules available</p>
-                    )}
-                </div>
-
-
-
-                <button
-                    className="mt-4 px-4 py-2 bg-green-500 text-white rounded"
-                    onClick={handleSubmit}
-                >
-                    Evaluate Rule
-                </button>
-
-                {/* Display evaluation result */}
-                {evaluationResult !== null && (
-                    <div className="mt-4">
-                        <h2 className="text-xl">Evaluation Result:</h2>
-                        <p>{evaluationResult.toString()}</p>
-                    </div>
-                )}
-
-            </div>
-        </>
+  const handleRuleSelect = (ruleId) => {
+    setSelectedRuleIds((prev) =>
+      prev.includes(ruleId)
+        ? prev.filter((id) => id !== ruleId) // Remove if already selected
+        : [...prev, ruleId] // Add if not selected
     );
+  };
+
+  const handleSubmit = () => {
+    if (selectedRuleIds.length > 0) {
+      onEvaluateCombinedRules({
+        rule_ids: selectedRuleIds,
+        data_for_evaluation: dataForEvaluation,
+        use_most_freq_operator_heuristic: useHeuristic ? 1 : 0,
+        custom_operator: customOperator,
+        store_combined_rule: false,
+      });
+    } else {
+      toast.warning('Please select at least one rule to evaluate.');
+    }
+  };
+
+  // Sort rules based on `updated_at` (latest first)
+  const sortedRules = [...(rules || [])].sort(
+    (a, b) => new Date(b.updated_at) - new Date(a.updated_at)
+  );
+
+  return (
+    <>
+      <div className="flex flex-col items-center justify-center gap-2">
+        <div className="flex flex-col items-center justify-center gap-2">
+          <h1 className="text-2xl">Evaluate Rules</h1>
+          <p className='text-center'>This feature allows you to evaluate users based on both, A single rule and a 
+             combined set of rules. {"(If no operator choice is mentioned, the engine assumes a default of OR operator to combine the rules.)"}
+        </p>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <div className="flex md:flex-row items-start mt-4 gap-3 flex-col">
+            {ATTRIBUTE_CATALOG.map((attribute, key) => (
+              <Input
+                key={key}
+                type="text"
+                label={titleCase(attribute)}
+                value={dataForEvaluation[attribute] || ''}
+                onChange={(e) => handleInputChange(attribute, e.target.value)}
+              />
+            ))}
+          </div>
+
+          <div className="flex gap-4 mt-4">
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={useHeuristic}
+                onChange={(e) => setUseHeuristic(e.target.checked)}
+              />
+              Use Most Frequent Operator Heuristic
+            </label>
+
+            <Input
+              type="text"
+              label="Custom Operator"
+              value={customOperator}
+              onChange={(e) => setCustomOperator(e.target.value)}
+            />
+          </div>
+
+          <Button
+            className="mt-4 px-4 py-2"
+            onClick={handleSubmit}
+            variant="light"
+            color="primary"
+          >
+            Evaluate Combined Rules
+          </Button>
+        </div>
+
+        <div className="w-full mt-4">
+          {sortedRules && sortedRules.length ? (
+            sortedRules.map((rule, key) => (
+              <div
+                key={rule.id}
+                className={`flex items-center justify-between p-3 m-2 rounded cursor-pointer  transition-colors duration-200 ${
+                  selectedRuleIds.includes(rule.id) ? 'bg-blue-300' : 'bg-gray-200'
+                }`}
+                onClick={() => handleRuleSelect(rule.id)}
+              >
+                <p className="font-bold">{key + 1}. {rule.rule_text}</p>
+                <p className="text-sm text-center w-[250px]">
+                  {formatDateToIST(rule?.updated_at)}
+                </p>
+              </div>
+            ))
+          ) : (
+            <p>No rules available</p>
+          )}
+        </div>
+      </div>
+    </>
+  );
 }
 
 export default EvaluateRulesComponent;

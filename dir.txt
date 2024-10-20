@@ -1,0 +1,74 @@
+Enter the path of the root directory: 
+Directory structure for: .
+
+|-- dir.txt
+|-- .DS_Store
+|-- Assignment1-Rule-Engine
+    |-- RuleEngine
+        |-- index.py
+        |-- __init__.py
+    |-- .DS_Store
+    |-- requirements.txt
+    |-- run_tests.py
+    |-- Dockerfile
+    |-- constants
+        |-- index.py
+        |-- __init__.py
+    |-- engine_utils
+        |-- rule_engine_utils.py
+        |-- __init__.py
+    |-- Parser
+        |-- index.py
+        |-- __init__.py
+    |-- README.md
+    |-- docker-compose.yml
+    |-- RichFont
+        |-- index.py
+        |-- __init__.py
+    |-- Node
+        |-- index.py
+        |-- __init__.py
+    |-- main.py
+    |-- dummy.py
+    |-- future
+        |-- metadata.png
+        |-- funtion_securiyy.png
+    |-- client
+        |-- index.html
+        |-- tailwind.config.js
+        |-- .DS_Store
+        |-- utils
+            |-- index.js
+        |-- vite.config.js
+        |-- README.md
+        |-- public
+            |-- engo-1.png
+            |-- engo-2.png
+            |-- engo-3.png
+            |-- arrow.png
+            |-- vite.svg
+            |-- bulb.png
+        |-- .gitignore
+        |-- package-lock.json
+        |-- package.json
+        |-- eslint.config.js
+        |-- postcss.config.js
+        |-- src
+            |-- App.css
+            |-- index.css
+            |-- components
+                |-- ModifyRuleComponent.jsx
+                |-- CombineRulesComponent.jsx
+                |-- HeroModalComponent.jsx
+                |-- Flow.jsx
+                |-- EvaluateRulesComponent.jsx
+                |-- SelectRuleComponent.jsx
+                |-- CreateRuleComponent.jsx
+                |-- CustomNode.jsx
+            |-- main.jsx
+            |-- App.jsx
+            |-- assets
+                |-- react.svg
+|-- .gitignore
+|-- .gitattributes
+|-- get_dir_str.py

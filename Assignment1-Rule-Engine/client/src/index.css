@@ -15,3 +15,8 @@
   font-weight: 529;
   font-style: normal;
 }
+
+.engo-arrow-to-console {
+  @apply -scale-x-100;
+  -webkit-transform: scaleX(-1);
+}

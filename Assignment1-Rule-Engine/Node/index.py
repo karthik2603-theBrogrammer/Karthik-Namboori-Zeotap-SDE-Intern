@@ -160,40 +160,108 @@ class Node:
             return changed
 
         
-    def add_sub_expression(self, parent_id, sub_expr, position='left'):
+    def add_sub_expression(self, parent_id, sub_expr_ast, position='left'):
         if self.id == parent_id and self.node_type == 'operator':
             if position == 'left':
-                self.left = sub_expr
+                self.left = sub_expr_ast
             elif position == 'right':
-                self.right = sub_expr
+                self.right = sub_expr_ast
             else:
                 raise ValueError("Position must be 'left' or 'right'")
             self.id = self.get_id()
             return True
         else:
-            added = False
+            added = False 
             if self.left:
-                added = self.left.add_sub_expression(parent_id, sub_expr, position)
+                added = self.left.add_sub_expression(parent_id, sub_expr_ast, position)
             if not added and self.right:
-                added = self.right.add_sub_expression(parent_id, sub_expr, position)
+                added = self.right.add_sub_expression(parent_id, sub_expr_ast, position)
             return added
         
     def remove_sub_expression(self, target_id):
+        """
+        Removes a sub-expression with the given target_id.
+        Ensures that the AST remains logically correct after removal.
+        """
+        # If the left child is the target
         if self.left and self.left.id == target_id:
-            self.left = None
-            self.id = self.get_id()
+            # Replace the current node with the right child if it exists
+            if self.right:
+                self._promote_child('right')
+            else:
+                self.left = None
+                self.id = self.get_id()
             return True
+
+        # If the right child is the target
         elif self.right and self.right.id == target_id:
-            self.right = None
-            self.id = self.get_id()
-            return True
-        else:
-            removed = False
+            # Replace the current node with the left child if it exists
             if self.left:
-                removed = self.left.remove_sub_expression(target_id)
-            if not removed and self.right:
-                removed = self.right.remove_sub_expression(target_id)
+                self._promote_child('left')
+            else:
+                self.right = None
+                self.id = self.get_id()
+            return True
+
+        # Recursively search in left and right children
+        removed = False
+        if self.left:
+            removed = self.left.remove_sub_expression(target_id)
+        if not removed and self.right:
+            removed = self.right.remove_sub_expression(target_id)
+
         return removed
+
+    def _promote_child(self, child_position):
+        """
+        Promote a child (either 'left' or 'right') to replace the current node.
+        :Private Method for this class.
+        """
+        if child_position == 'left':
+            child = self.left
+        else:
+            child = self.right
+
+        # Copy the child node's properties into the current node
+        self.node_type = child.node_type
+        self.value = child.value
+        self.left = child.left
+        self.right = child.right
+        self.id = self.get_id()
+
+
+    
+    def get_text(self):
+        """
+        Recursively converts the AST into a readable text representation of the rule.
+        """
+        if self.node_type == 'condition':
+            attr, op, val = self.value
+            left_text = attr.get_text() if isinstance(attr, Node) else str(attr)
+            right_text = val.get_text() if isinstance(val, Node) else str(val)
+            return f"({left_text} {op} {right_text})"
+
+        elif self.node_type == 'operator':
+            if self.value == 'NOT':
+                left_text = self.left.get_text() if self.left else ""
+                return f"(NOT {left_text})"
+            else:
+                left_text = self.left.get_text() if self.left else ""
+                right_text = self.right.get_text() if self.right else ""
+                return f"({left_text} {self.value} {right_text})"
+
+        elif self.node_type == 'function':
+            args_text = ", ".join(arg.get_text() for arg in self.args)
+            return f"{self.value}({args_text})"
+
+        elif self.node_type == 'constant':
+            return str(self.value)
+
+        elif self.node_type == 'variable':
+            return self.value
+
+        else:
+            raise ValueError(f"Unknown node type: {self.node_type}")
         
 
 # def get_id(self):
