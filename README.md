@@ -17,59 +17,31 @@
 
 ## ⚖️ AST vs DAG Comparison
 
-| 🌲 **AST (Abstract Syntax Tree)**         | 🔄 **DAG (Directed Acyclic Graph)**      |
+|  **AST (Abstract Syntax Tree)**         | **DAG (Directed Acyclic Graph)**       |
 | ----------------------------------------- | ---------------------------------------- |
-| ![AST Image](link_to_ast_image.png)       | ![DAG Image](link_to_dag_image.png)      |
-| Represents the syntax of a rule. Used in compilers for code analysis. | Optimized version of AST, eliminates redundancy, improves efficiency. |
+| <p align="center"><img width="468" alt="Screenshot 2024-10-21 at 12 34 57 AM" src="https://github.com/user-attachments/assets/3a4a4786-48a5-477a-85f8-82638ddb67ec"></p> | <p align="center"><img width="450" alt="Screenshot 2024-10-21 at 12 35 04 AM" src="https://github.com/user-attachments/assets/759bb37f-5bb6-4f99-8a3c-6e8066a8354c"></p> |
+| Represents the syntax of a rule. It is commonly used in compilers for code analysis. Compiler first creates a parse tree (Concrete Syntax Tree) which is converted to an Syntax tree (Abstract Syntax). | Represents a compressed form of an AST. In large-scale applications with complex expressions, DAGs significantly reduce memory usage and eliminate redundant computations. |
 
----
 
-## ✨ Engo's Tokenizer
+## Engo's Tokenizer
 
-Here is the code for Engo's tokenizer:
+A code-snippet from Engo's Tokenizer. Can parse numbers, attributes, functions (custom user-defined), left and right parantheses, comma andlogical operator in order of precedence (AND, OR, NOT).
 
 ```python
-import re
+token_specification = [
+    ('NUMBER', r'-?\d+(\.\d+)?'),   # Integer or decimal number, including negatives
+    ('STRING',   r"'[^']*'"),       # String enclosed in single quotes
+    ('AND',      r'\bAND\b'),       # Logical AND
+    ('OR',       r'\bOR\b'),        # Logical OR
+    ('NOT',      r'\bNOT\b'),       # Logical NOT
+    ('FUNCTION', r'\b\w+\s*\('),    # Function names followed by '('
+    ('COMMA',    r','),             # Comma
+    ('OP',       r'(<=|>=|<>|!=|=|<|>)'), # Comparison operators
+    ('LPAREN',   r'\('),            # Left parenthesis
+    ('RPAREN',   r'\)'),            # Right parenthesis
+    ('IDENT',    r'\b\w+\b'),       # Identifiers
+    ('SKIP',     r'[ \t]+'),        # Skip spaces and tabs
+    ('MISMATCH', r'.'),             # Any other character
+]
+```
 
-def tokenize(rule_string):
-    token_specification = [
-        ('NUMBER', r'-?\d+(\.\d+)?'),   # Integer or decimal number, including negatives
-        ('STRING',   r"'[^']*'"),       # String enclosed in single quotes
-        ('AND',      r'\bAND\b'),       # Logical AND
-        ('OR',       r'\bOR\b'),        # Logical OR
-        ('NOT',      r'\bNOT\b'),       # Logical NOT
-        ('FUNCTION', r'\b\w+\s*\('),    # Function names followed by '('
-        ('COMMA',    r','),             # Comma
-        ('OP',       r'(<=|>=|<>|!=|=|<|>)'), # Comparison operators
-        ('LPAREN',   r'\('),            # Left parenthesis
-        ('RPAREN',   r'\)'),            # Right parenthesis
-        ('IDENT',    r'\b\w+\b'),       # Identifiers
-        ('SKIP',     r'[ \t]+'),        # Skip spaces and tabs
-        ('MISMATCH', r'.'),             # Any other character
-    ]
-    token_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
-    token_re = re.compile(token_regex, re.IGNORECASE)
-
-    tokens = []
-    pos = 0
-    while pos < len(rule_string):
-        mo = token_re.match(rule_string, pos)
-        if not mo:
-            raise ValueError(f"Unexpected character: '{rule_string[pos]}' at position {pos}")
-        kind = mo.lastgroup
-        value = mo.group(kind)
-        if kind == 'SKIP':
-            pass
-        elif kind == 'MISMATCH':
-            raise ValueError(f"Unexpected token: '{value}' at position {pos}")
-        else:
-            if kind in ('AND', 'OR', 'NOT'):
-                value = value.upper()
-            if kind == 'FUNCTION':
-                value = value.strip().rstrip('(')
-                tokens.append(('FUNCTION', value))
-                tokens.append(('LPAREN', '('))
-            else:
-                tokens.append((kind, value))
-        pos = mo.end()
-    return tokens
