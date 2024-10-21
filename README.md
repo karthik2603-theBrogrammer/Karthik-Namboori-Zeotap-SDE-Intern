@@ -153,6 +153,11 @@ python main.py
 docker-compose -f docker-compose.yaml up
 ```
 
+- To view the Postgres shell and execute commands, run the following command:
+```sh
+docker exec -it postgres_db psql -U postgres -d postgres
+```
+
 
 ### 🐳 Docker Setup (supports both linux/amd64 and linux/arm64)
 1. Clone the repository.
@@ -160,6 +165,7 @@ docker-compose -f docker-compose.yaml up
 ```sh
 docker-compose -f docker-compose-prod.yaml up
 ```
+- And thats it! 🎉
 </details>
 
 
