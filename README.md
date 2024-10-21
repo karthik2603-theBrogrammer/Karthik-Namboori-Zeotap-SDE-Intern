@@ -14,7 +14,7 @@
 
 ## What is Engo?
 
-- Engo is a custom rule engine that parses rules defined in its specific language I call, `Engolang`. It helps define rules and validate users against these rules. 
+- Engo is a custom rule engine that parses rules defined in its specific language. It helps define rules and validate users against these rules. 
 - Engo supports representations like `ASTs (Abstract Syntax Trees)` and `DAGs (Directed Acyclic Graphs)` to optimize rule processing.
 - The UI, built using **React Flow**, allows interactive visualizations of these rule structures. 
 
@@ -24,7 +24,7 @@
 |  **AST (Abstract Syntax Tree)**         | **DAG (Directed Acyclic Graph)**       |
 | ----------------------------------------- | ---------------------------------------- |
 | <p align="center"><img width="468" alt="Screenshot 2024-10-21 at 12 34 57 AM" src="https://github.com/user-attachments/assets/3a4a4786-48a5-477a-85f8-82638ddb67ec"></p> | <p align="center"><img width="450" alt="Screenshot 2024-10-21 at 12 35 04 AM" src="https://github.com/user-attachments/assets/759bb37f-5bb6-4f99-8a3c-6e8066a8354c"></p> |
-| Represents the syntax of a rule. It is commonly used in compilers for code analysis. Compiler first creates a parse tree (Concrete Syntax Tree) which is converted to an Syntax tree (Abstract Syntax). | Represents a compressed form of an AST. In large-scale applications with complex expressions, DAGs significantly reduce memory usage and eliminate redundant computations. |
+| Represents the syntax of a rule. It is commonly used in compilers for code analysis. Compiler first creates a parse tree (Concrete Syntax Tree) which is converted to an Syntax tree (Abstract Syntax). | Represents a compressed form of an AST. In large-scale applications with complex expressions, DAGs significantly reduce storage and eliminate redundant computations. |
 
 </details>
 
