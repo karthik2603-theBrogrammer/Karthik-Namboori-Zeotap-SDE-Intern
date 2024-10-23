@@ -25,7 +25,8 @@
 3. Real-time Processing: Node-cron for scheduled tasks
 4. Server Sent events to send responses back to the client.
 5. Email Notifications: Nodemailer
-6. API Testing: Postman (recommended)
+6. Frontend: React (Vite)
+7. API Testing: Postman (recommended)
 
 # Key Components
 
