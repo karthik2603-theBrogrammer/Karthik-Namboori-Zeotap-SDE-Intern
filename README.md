@@ -1,5 +1,5 @@
 > [!TIP]  
-> 🌳 Click [here]() for Real-Time Data Processing System for Weather Monitoring System assignment.
+> 🌳 Continue reading for Rule Engine assignment and click [here]() for Real-Time Data Processing System for Weather Monitoring System assignment.
 
 # Engo: A Custom Rule Engine.
 
