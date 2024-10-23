@@ -1,5 +1,5 @@
 VALID_OPERATORS = {'<', '>', '<=', '>=', '=', '==', '!=', '<>'}
-ATTRIBUTE_CATALOG = {'age', 'department', 'salary', 'experience'}
+ATTRIBUTE_CATALOG = {'age', 'department', 'salary', 'experience', "income", "spend"}
 VALID_LOGICAL_OPERATORS = {'AND', 'OR', 'NOT'}
 
 

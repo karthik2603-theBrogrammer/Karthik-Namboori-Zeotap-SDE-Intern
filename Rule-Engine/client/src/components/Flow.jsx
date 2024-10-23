@@ -127,46 +127,47 @@ function calculatePositions(ast, level = 0, xOffset = 0, spacingX = 200, spacing
 
     // Reuse or create node
     if (!nodeMap.has(node.id)) {
-      const newNode = {
-        id: node.id,
-        type: 'customNode', // Use custom node type
-        data: { node, onNodeChange: handleNodeChange }, // Pass node data and change handler
-        position: { x: adjustedX, y: adjustedY },
-      };
-      nodes.push(newNode);
-      nodeMap.set(node.id, newNode); // Store in map for reuse
+        const newNode = {
+            id: node.id,
+            type: 'customNode', // Use custom node type
+            data: { node, onNodeChange: handleNodeChange }, // Pass node data and change handler
+            position: { x: adjustedX, y: adjustedY },
+        };
+        nodes.push(newNode);
+        nodeMap.set(node.id, newNode); // Store in map for reuse
     }
 
-    // Create edge from child to parent with arrow
-    if (parentId && !edges.some(edge => edge.source === node.id && edge.target === parentId)) {
-      edges.push({
-        id: `${node.id}-${parentId}`,
-        source: node.id,
-        target: parentId,
-        markerEnd: {
-          type: MarkerType.ArrowClosed, // Add arrow at the end
-        },
-      });
+    // Create edge from parent to child
+    if (parentId && !edges.some(edge => edge.source === parentId && edge.target === node.id)) {
+        edges.push({
+            id: `${parentId}-${node.id}`,
+            source: parentId,
+            target: node.id,
+            markerEnd: {
+                type: MarkerType.ArrowClosed, // Add arrow at the end
+            },
+        });
     }
 
     // Recursively traverse children
     if (node.left) {
-      traverse(
-        node.left,
-        adjustedX - spacingX / (level + 1), // Shift left based on level
-        adjustedY + spacingY, // Move down
-        node.id
-      );
+        traverse(
+            node.left,
+            adjustedX - spacingX / (level + 1), // Shift left based on level
+            adjustedY + spacingY, // Move down
+            node.id
+        );
     }
     if (node.right) {
-      traverse(
-        node.right,
-        adjustedX + spacingX / (level + 1), // Shift right based on level
-        adjustedY + spacingY, // Move down
-        node.id
-      );
+        traverse(
+            node.right,
+            adjustedX + spacingX / (level + 1), // Shift right based on level
+            adjustedY + spacingY, // Move down
+            node.id
+        );
     }
-  }
+}
+
 
   traverse(ast, xOffset, 0); // Start from center
   return { nodes, edges };

@@ -4,6 +4,8 @@ import { Button } from '@nextui-org/button';
 import { toast } from 'sonner';
 import axios from 'axios';
 
+import { supportedFunctions } from "../../utils/index"
+
 function CreateRuleComponent({ fetchRules }) {
     const [ruleText, setRuleText] = useState('');
     const [loading, setLoading] = useState(false); // Track loading state
@@ -34,13 +36,14 @@ function CreateRuleComponent({ fetchRules }) {
     const sampleRules = [
         "((age > 30 AND department = 'Marketing')) AND (salary > 20000 OR experience > 5)",
         "((age > 30 AND department = 'Sales') OR (age < 25 AND department = 'Marketing')) AND (salary > 50000 OR experience > 5)",
+        "(department = 'Sales' AND salary > salary_for_age_experience(age, experience))"
     ];
 
     return (
         <div className="flex flex-col items-center justify-center gap-6">
             <h2 className="text-2xl">Create New Rule</h2>
             <p className="text-center text-gray-600">
-                Enter a new rule below and click <strong>Add Rule</strong> to create it.
+                Enter a new rule below and click <strong>Add Rule</strong> to create it. ⚠️ Attributes are case-senstitve!
             </p>
 
             <form
@@ -84,6 +87,19 @@ function CreateRuleComponent({ fetchRules }) {
                         </Button>
                     ))}
                 </ul>
+
+            </div>
+
+            <h2 className="text-2xl  mt-6">
+                Below are few user-defined functions supported by the rule language for advanced conditions.
+            </h2>
+            <div className='w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 flex-row gap-4 place-items-center'>
+                {supportedFunctions?.map((functionSupported, key) => (
+                    <div key={key} className='m-4 p-4 bg-slate-300 rounded-lg w-[300px] h-[150px]'>
+                        <p className='text-lg font-extrabold underline'>{functionSupported?.name}{"->"} {functionSupported?.returns}</p>
+                        <p className='text-sm'>{functionSupported?.description}</p>
+                    </div>
+                ))}
             </div>
         </div>
     );

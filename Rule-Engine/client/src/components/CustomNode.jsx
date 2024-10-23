@@ -32,7 +32,7 @@ function CustomNode({ data }) {
     return (
         <div className="relative">
             {/* Node Container */}
-            <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-lg w-48">
+            <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-lg min-w-48 w-fit">
                 {isEditing ? (
                     <div className="flex flex-col gap-2">
                         {/* Editable Fields */}
@@ -82,7 +82,7 @@ function CustomNode({ data }) {
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center w-full gap-2">
-                        {(node.node_type === "operator" || node.node_type == 'constant' || node.node_type == 'variable') && (
+                        {(node.node_type === "operator" || node.node_type === 'constant' || node.node_type === 'variable') && (
                             <p className="text-lg">{node.value}</p>
                         )}
                         {node.node_type === "condition" && (
@@ -90,8 +90,7 @@ function CustomNode({ data }) {
                         )}
                         {node.node_type === "function" && (
                             <div className='flex items-center justify-center'>
-                                <p className="text-lg text-center">{node.value}</p>
-                                <p className="text-lg text-center">{getArgumentValuesFromJson(node?.args)}</p>
+                                <p className="text-lg text-center text-wrap">{node.value}{getArgumentValuesFromJson(node?.args)}</p>
                             </div>
                         )}
                         <p className="text-md font-semibold">{"("}{node.node_type}{")"}</p>
@@ -99,18 +98,18 @@ function CustomNode({ data }) {
                 )}
             </div>
 
-            {/* Handles for connecting edges */}
+            {/* Handles for connecting edges (Parent to Child) */}
             <Handle
-                type="target"
-                position="bottom"
-                style={{ background: '#555', width: 22 }}
-                id="a"
+                type="target" // Represents incoming connection to this node (child)
+                position="top"
+                style={{ background: '#063895', width: 10 }}
+                id="target-handle"
             />
             <Handle
-                type="source"
-                position="top"
-                style={{ background: '#555', width: 44 }}
-                id="b"
+                type="source" // Represents outgoing connection from this node (parent)
+                position="bottom"
+                style={{ background: '#063895', width: 10 }}
+                id="source-handle"
             />
         </div>
     );

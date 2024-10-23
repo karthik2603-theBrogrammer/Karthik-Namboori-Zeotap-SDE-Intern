@@ -1,0 +1,2 @@
+curl http://api.openweathermap.org/data/2.5/forecast\?id\=524901\&appid\=\0606fd1d4ad5d981be6ea7ef6e9ed8bf
+curl https://api.openweathermap.org/data/2.5/weather\?lat\=44.34\&lon\=10.99\&appid\=\0f38d627f94763e0edaa8ba72a9e71f3

@@ -5,7 +5,8 @@ import { Input } from '@nextui-org/input';
 
 import { titleCase, formatDateToIST } from '../../utils';
 
-const ATTRIBUTE_CATALOG = ['age', 'department', 'salary', 'experience'];
+const ATTRIBUTE_CATALOG = ['age', 'department', 'salary', 'experience', 'income', 'spend'];
+const INTEGER_ATTRIBUTE_CATALOG = ['age', 'salary', 'experience', 'income', 'spend'];
 
 function EvaluateRulesComponent({ rules, onEvaluateCombinedRules, evaluationResult }) {
   const [selectedRuleIds, setSelectedRuleIds] = useState([]); // Support for multiple rules
@@ -15,7 +16,7 @@ function EvaluateRulesComponent({ rules, onEvaluateCombinedRules, evaluationResu
 
   // Helper function to ensure numbers are correctly parsed
   const parseValue = (attribute, value) => {
-    if (['age', 'salary', 'experience'].includes(attribute)) {
+    if (INTEGER_ATTRIBUTE_CATALOG.includes(attribute)) {
       const parsedValue = parseFloat(value);
       return isNaN(parsedValue) ? '' : parsedValue; // Return empty string if not a valid number
     }
@@ -64,10 +65,13 @@ function EvaluateRulesComponent({ rules, onEvaluateCombinedRules, evaluationResu
           <p className='text-center'>This feature allows you to evaluate users based on both, A single rule and a 
              combined set of rules. {"(If no operator choice is mentioned, the engine assumes a default of OR operator to combine the rules.)"}
         </p>
+        <p className='text-center'>
+          On evaluation, if the data satisfies the rule, you will be prompted with "Valid User!", else you will be prompted with "Invalid User!"
+        </p>
         </div>
 
         <div className="flex flex-col gap-2">
-          <div className="flex md:flex-row items-start mt-4 gap-3 flex-col">
+          <div className="flex md:grid md:grid-cols-3 md:place-items-center items-start mt-4 gap-3 flex-col">
             {ATTRIBUTE_CATALOG.map((attribute, key) => (
               <Input
                 key={key}

@@ -4,12 +4,11 @@ import { Toaster, toast } from 'sonner';
 import { Button } from '@nextui-org/button';
 
 import Flow from './components/Flow';
-import HeroModalComponent from './components/HeroModalComponent';
 import CombineRulesComponent from './components/CombineRulesComponent';
 import EvaluateRulesComponent from './components/EvaluateRulesComponent';
-import ModifyRuleComponent from './components/ModifyRuleComponent';
 import CreateRuleComponent from './components/CreateRuleComponent';
 import SelectRuleComponent from './components/SelectRuleComponent'; // Import new component
+import IntroductionToEngoComponent from './components/IntroductionToEngoComponent';
 import './App.css';
 
 function App() {
@@ -84,17 +83,17 @@ function App() {
         <img
           src="/engo-3.png"
           alt="engo-url"
-          className={`absolute z-100 top-12 ${selectedSetting === null ? 'md:top-0' : 'md:-top-2'} left-1/2 transform -translate-x-1/2 md:h-[250px] h-[150px] md:w-[400px] w-[270px] bg-transparent object-contain`}
+          className={`absolute z-100 top-12 ${selectedSetting === null ? 'md:top-0' : 'md:-top-2'} left-1/2 ${selectedRuleAst == null ? 'md:left-1/2' : "md:left-[200px]"} transform -translate-x-1/2 md:h-[250px] h-[150px] md:w-[400px] w-[270px] bg-transparent object-contain`}
           height={100}
           width={100}
         />
       </div>
       {/* engo-arrow-to-console */}
-      <div className="md:flex hidden absolute z-100 top-[70px] -right-[100px]  ">
+      <div className="md:flex hidden absolute z-100 top-[70px] right-0  ">
         <img
           src="/arrow.png"
           alt="engo-url"
-          className="engo-arrow-to-console z-100 md:h-[80px] h-[70px] md:w-[350px] w-[270px] bg-transparent object-contain"
+          className={`engo-arrow-to-console z-100 md:h-[80px] h-[70px]  w-[270px] md:w-[200px] bg-transparent object-contain`}
           height={100}
           width={100}
         />
@@ -124,7 +123,7 @@ function App() {
           >
             LinkedIn
           </a>
-          . To get started, click the <strong>Toggle Console</strong> button.
+          . To get started, click the <strong>Toggle Console</strong> button and do give a read to the introduction section.
         </p>
       </div>
 
@@ -133,7 +132,7 @@ function App() {
       <div
         id="drawer-navigation"
         className={`fixed top-0 left-0 z-40 w-[100%] md:w-[80%] h-screen p-4 overflow-y-auto transition-transform ${isDrawerOpen ? 'translate-x-0' : '-translate-x-full'
-          } bg-gray-400 bg-opacity-20 backdrop-blur-md backdrop-filter rounded-lg`}
+          } bg-gray-400 bg-opacity-20 backdrop-blur-lg backdrop-filter rounded-lg`}
       >
         <h5 className="text-base font-semibold text-gray-500 uppercase">Engo</h5>
         <button
@@ -157,7 +156,7 @@ function App() {
         </button>
 
         <div className="py-4 flex flex-col items-center justify-center gap-2 mt-3">
-          <h1 className="text-3xl">Rule Engine Console</h1>
+          <h1 className="font-bold text-5xl text-center">Rule Engine Console</h1>
           <p className="text-sm text-center">
             Use this console to fetch and select rules, render their ASTs, modify rules, and more!
           </p>
@@ -178,6 +177,11 @@ function App() {
         </div>
 
         <div className="py-4">
+          {
+            selectedSetting === null && (
+              <IntroductionToEngoComponent/>
+            )
+          }
           {selectedSetting === 'Select Rule' && (
             <SelectRuleComponent rules={rules} onSelectRule={handleSelectRule} />
           )}

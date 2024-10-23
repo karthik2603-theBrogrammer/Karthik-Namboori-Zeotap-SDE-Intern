@@ -12,11 +12,14 @@
 .raleway-font {
   font-family: "Raleway", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 529;
+  font-weight: 900;
   font-style: normal;
 }
+
+
 
 .engo-arrow-to-console {
   @apply -scale-x-100;
   -webkit-transform: scaleX(-1);
 }
+
