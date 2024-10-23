@@ -1,7 +1,7 @@
 # MonitX: A Real-Time Data Processing System for Weather Monitoring with Rollups and Aggregates
 
 > [!TIP]  
-> 🌳 Click [here]() for viewing the Rule Engine Assignment.
+> 🌳 Click [here](https://github.com/karthik2603-theBrogrammer/Karthik-Namboori-Zeotap-SDE-Intern) for viewing the Rule Engine Assignment.
 
 
 <div align="center">
