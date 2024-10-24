@@ -154,4 +154,10 @@ function sendAlertEmail(alertData) {
   <img width="1460" alt="Screenshot 2024-10-24 at 2 52 44 PM" src="https://github.com/user-attachments/assets/9d7a9940-f1d4-47fe-bbb1-e70ef8186712">
 </div>
 
+# Email Screenshot
+
+<div aligh = "center">
+  <img width="1053" alt="Screenshot 2024-10-24 at 5 04 01 PM" src="https://github.com/user-attachments/assets/30a15fa8-b053-42ab-9ede-0681d0a0f215">
+</div>
+
 
