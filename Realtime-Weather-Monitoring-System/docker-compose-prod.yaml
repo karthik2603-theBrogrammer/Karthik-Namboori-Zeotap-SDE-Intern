@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - mongo_data:/data/db
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    depends_on:
+      - mongo
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+      ME_CONFIG_BASICAUTH: "false"
+
+  server:
+    image: karthiknamboori/weather-monitoring-backend:latest
+    restart: always
+    depends_on:
+      - mongo
+    env_file:
+      - ./server/.env-prod
+    ports:
+      - "5555:5555"
+    # volumes:
+    #   - ./server:/usr/src/app
+    command: npm run start
+
+  client:
+    image: karthiknamboori/weather-monitoring-frontend:latest
+    restart: always
+    depends_on:
+      - server
+    ports:
+      - "3000:80"
+
+volumes:
+  mongo_data:
