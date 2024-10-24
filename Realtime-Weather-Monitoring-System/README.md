@@ -10,12 +10,37 @@
 
 # What is MonitX?
 - MonitX is a sophisticated real-time data processing system designed for weather monitoring. It offers the following key features:
+- List of features MonitX supports
 
-1. Real-time weather data collection and processing: A Cron Job runs every 10 minutes fetching data from the OpenWeather API.
-2. Automated alert system for weather condition thresholds: Sent to the frontend via SSE (Server Sent Events and also via mail using nodemailer)
-3. Daily rollups and aggregates for comprehensive weather analysis: A cron job runs every 24h executing the roll ups leeveraging the the data in the MongoDB database.
-5. RESTful API for easy integration and data retrieval
-6. Email notifications for critical weather alerts: Done with the help of the `Nodemailer` package in npm. One has to enable 2FA in the gmail Id and obtain the App password to send mails on behalf of that account.
+| Feature ✨                                                       | Description   🚀                                                                                                                                                    |
+|---------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Real-time weather data collection and processing              | A Cron Job runs every 10 minutes fetching data from the OpenWeather API.                                                                                          |
+| Automated alert system for weather condition thresholds       | Sent to the frontend via SSE (Server Sent Events) and also via mail using Nodemailer.                                                                             |
+| Daily rollups and aggregates for comprehensive weather analysis | A cron job runs every 24h executing the roll-ups leveraging the data in the MongoDB database.                                                                     |
+| RESTful API for easy integration and data retrieval           | Provides endpoints for retrieving weather data, alerts, and daily summaries, facilitating seamless integration with other applications.                           |
+| Email notifications for critical weather alerts               | Done with the help of the `Nodemailer` package in npm. One has to enable 2FA in the Gmail ID and obtain the App password to send emails on behalf of that account. |
+
+# How to setup Monitx 🐳
+
+1. Clone the Repository
+
+```sh
+git clone https://github.com/your-username/monitx.git
+cd monitx
+```
+
+- We will make use of Docker to setup monitx.
+- After cloning the respository, proceed to `.env-prod` and fill up the missing required environment variables before running the compose file.
+- [IMPORTANT] APP_PASSWORD: for sending mails via nodemailer SMTP.
+
+
+2. Spin up Compose file `(docker-compose-prod.yaml)`
+
+```sh
+docker-compose -f docker-compose-prod.yaml up
+```
+
+3. Thats It 🎉
 
 
 # Tech Stack
@@ -77,12 +102,31 @@
 ```
 
 
-# API Routes
+## Revised API Documentation
 
-- MonitX provides a comprehensive RESTful API for interacting with the system. Key routes include:
-1. ```/api/weather```: Endpoints for retrieving and managing weather data
-2. ```/api/alerts```: Endpoints for setting up and managing weather alerts
-3. ```/api/summaries```: Endpoints for accessing daily weather summaries
+### Alert Endpoints
+
+| Method | Endpoint           | Description               |
+|--------|--------------------|---------------------------|
+| GET    | `/api/alerts`      | Retrieve all alerts       |
+| POST   | `/api/alerts`      | Create a new alert        |
+| PUT    | `/api/alerts/:id`  | Deactivate an alert       |
+
+### API Endpoints
+
+| Method | Endpoint          | Description                                  |
+|--------|-------------------|----------------------------------------------|
+| GET    | `/api/summaries`  | Get daily summaries filtered by city         |
+
+### Weather Endpoints
+
+| Method | Endpoint        | Description                          |
+|--------|-----------------|--------------------------------------|
+| GET    | `/api/weather`  | Get weather data filtered by city    |
+
+---
+
+
 
 # Alert System
 
@@ -104,47 +148,10 @@ function sendAlertEmail(alertData) {
 }
 ```
 
-# How to setup Monitx
-1. Clone the Repository
+# UI Screenshot
 
-```sh
-git clone https://github.com/your-username/monitx.git
-cd monitx
-```
-
-2. Spin up the Docker Container for MongoDB.
-
-```sh
-docker-compose -f docker-compose.yaml up
-```
-
-4. Install dependencies
-
-```sh
-cd server
-npm install
-```
-
-4. Set up environment variables
-- Create a .env file in the server directory with the following variables:
-
-```
-MONGODB_URI=your_mongodb_connection_string
-APP_PASSWORD=your_email_app_password
-PORT=3000
-```
+<div aligh = "center">
+  <img width="1460" alt="Screenshot 2024-10-24 at 2 52 44 PM" src="https://github.com/user-attachments/assets/9d7a9940-f1d4-47fe-bbb1-e70ef8186712">
+</div>
 
 
-# API Documentation
-
-### Weather Endpoints
-
-1. ```GET /api/weather```: Retrieve current weather data
-2. ```POST /api/weather```: Add new weather data
-3. ```GET /api/weather/history```: Retrieve historical weather data
-
-### Alert Endpoints
-1. ```GET /api/alerts```: Retrieve all active alerts
-2. ```POST /api/alerts```: Create a new weather alert
-3. ```PUT /api/alerts/:id```: Update an existing alert
-4. ```DELETE /api/alerts/:id``` : Delete an alert
