@@ -1,7 +1,8 @@
-// routes/api.js
 const express = require('express');
 const router = express.Router();
 const Alert = require('../models/Alert');
+const Weather = require('../models/Weather');
+const DailySummary = require('../models/DailySummary');
 
 // Create a new alert
 router.post('/alerts', async (req, res) => {
@@ -34,6 +35,28 @@ router.put('/alerts/:id', async (req, res) => {
     alert.active = false;
     await alert.save();
     res.json(alert);
+  } catch (error) {
+    res.status(500).send('Server Error');
+  }
+});
+
+// Get daily summaries filtered by city
+router.get('/summaries', async (req, res) => {
+  const { city } = req.query;
+  try {
+    const summaries = await DailySummary.find(city ? { city } : {});
+    res.json(summaries);
+  } catch (error) {
+    res.status(500).send('Server Error');
+  }
+});
+
+// Get weather data filtered by city
+router.get('/weather', async (req, res) => {
+  const { city } = req.query;
+  try {
+    const weatherData = await Weather.find(city ? { city } : {});
+    res.json(weatherData);
   } catch (error) {
     res.status(500).send('Server Error');
   }

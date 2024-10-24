@@ -1,21 +1,24 @@
+// server.js
 require("dotenv").config();
 const express = require("express");
 const axios = require("axios");
 const cron = require("node-cron");
 const cors = require("cors");
 const nodemailer = require('nodemailer');
+const figlet = require('figlet');
+
 
 const connectDB = require("./config/db");
 const Weather = require("./models/Weather.js");
 const DailySummary = require("./models/DailySummary.js");
 const AlertModel = require("./models/Alert.js");
 
-const sendAlertEmail = require("./utils/sendMessage")
+const sendAlertEmail = require("./utils/sendMessage");
 const apiRoutes = require("./routes/api");
 
 const app = express();
-app.use("/api", apiRoutes);
 app.use(cors());
+app.use("/api", apiRoutes);
 app.use(express.json());
 
 // Connect to MongoDB
@@ -71,23 +74,48 @@ cities.forEach((city) => {
   consecutiveBreaches[city.name] = 0;
 });
 
+// Function to fetch weather data with retry logic
+const fetchWeatherData = async (city) => {
+  const apiKeys = [
+    process.env.OPENWEATHERMAP_API_KEY,
+    process.env.OPENWEATHERMAP_API_KEY_2,
+  ];
 
+  for (let i = 0; i < apiKeys.length; i++) {
+    const apiKey = apiKeys[i];
+    try {
+      const response = await axios.get(
+        `https://api.openweathermap.org/data/2.5/weather`, {
+          params: {
+            lat: city.lat,
+            lon: city.lon,
+            appid: apiKey,
+          },
+        }
+      );
+      console.log("API KEY: ", i + 1, "Worked")
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching data for ${city.name} with API key ${i + 1}:`, error.message);
+      if (i === apiKeys.length - 1) {
+        // If this was the last API key, rethrow the error
+        throw error;
+      }
+    }
+  }
+};
 
 // Cron job to fetch data every FETCH_INTERVAL minutes
 cron.schedule(`*/${process.env.FETCH_INTERVAL} * * * *`, async () => {
   console.log("Fetching weather data...");
   for (const city of cities) {
     try {
-      const response = await axios.get(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${city.lat}&lon=${city.lon}&appid=${process.env.OPENWEATHERMAP_API_KEY}`
-      );
-
-      const data = response.data;
+      const data = await fetchWeatherData(city);
 
       const weatherData = {
         city: city.name,
         main: data.weather[0].main,
-        description: data.description,
+        description: data.weather[0].description,
         temp: data.main.temp, // Temperature in Kelvin
         feels_like: data.main.feels_like, // Feels like temperature in Kelvin
         humidity: data.main.humidity,
@@ -106,7 +134,7 @@ cron.schedule(`*/${process.env.FETCH_INTERVAL} * * * *`, async () => {
       // Check and handle alerts
       await handleAlerts(weatherData);
     } catch (error) {
-      console.error(`Error fetching data for ${city.name}:`, error.message);
+      console.error(`Failed to fetch weather data for ${city.name}:`, error.message);
     }
   }
 });
@@ -222,9 +250,18 @@ const calculateDailySummaries = async () => {
   }
 };
 
-// Schedule daily summary calculation at midnight
-cron.schedule("*/2 * * * *", calculateDailySummaries);
+// Schedule daily summary calculation
+cron.schedule(`0 */${process.env.DAILY_SUMMARY_INTERVAL} * * *`, calculateDailySummaries);
 
 // Start the server
 const PORT = process.env.PORT || 5555;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+  figlet('monitx', { horizontalLayout: 'default', verticalLayout: 'default' }, (err, data) => {
+    if (err) {
+      console.error('Error generating ASCII art:', err);
+      return;
+    }
+    console.log(data);
+  });
+});

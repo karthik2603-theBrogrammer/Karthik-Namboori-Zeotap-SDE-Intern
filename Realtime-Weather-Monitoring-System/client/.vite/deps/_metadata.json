@@ -1,0 +1,73 @@
+{
+  "hash": "781cabc4",
+  "configHash": "1c8f69e7",
+  "lockfileHash": "f8b6197a",
+  "browserHash": "17bc61f9",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "b6e467c7",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "bc64f2e8",
+      "needsInterop": true
+    },
+    "axios": {
+      "src": "../../node_modules/axios/index.js",
+      "file": "axios.js",
+      "fileHash": "8d9c0d5d",
+      "needsInterop": false
+    },
+    "sonner": {
+      "src": "../../node_modules/sonner/dist/index.mjs",
+      "file": "sonner.js",
+      "fileHash": "f8538a93",
+      "needsInterop": false
+    },
+    "@nextui-org/button": {
+      "src": "../../node_modules/@nextui-org/button/dist/index.mjs",
+      "file": "@nextui-org_button.js",
+      "fileHash": "e9881f56",
+      "needsInterop": false
+    },
+    "@xyflow/react": {
+      "src": "../../node_modules/@xyflow/react/dist/esm/index.mjs",
+      "file": "@xyflow_react.js",
+      "fileHash": "ac523f32",
+      "needsInterop": false
+    },
+    "@nextui-org/input": {
+      "src": "../../node_modules/@nextui-org/input/dist/index.mjs",
+      "file": "@nextui-org_input.js",
+      "fileHash": "e6cf09be",
+      "needsInterop": false
+    },
+    "react-icons/fa": {
+      "src": "../../node_modules/react-icons/fa/index.mjs",
+      "file": "react-icons_fa.js",
+      "fileHash": "0253bb32",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-N7R2X2Z4": {
+      "file": "chunk-N7R2X2Z4.js"
+    },
+    "chunk-J3GJSMK3": {
+      "file": "chunk-J3GJSMK3.js"
+    },
+    "chunk-TNTPHDQH": {
+      "file": "chunk-TNTPHDQH.js"
+    },
+    "chunk-32E4H3EV": {
+      "file": "chunk-32E4H3EV.js"
+    },
+    "chunk-G3PMV62Z": {
+      "file": "chunk-G3PMV62Z.js"
+    }
+  }
+}
